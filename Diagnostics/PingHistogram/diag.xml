@@ -1,0 +1,18 @@
+<DiagnosticTests>
+  <DiagnosticTest
+    Name="Ping Histogram"
+    Description="Measure ping response times from the selected compute nodes and display the results in a histogram"
+    Company="Microsoft"
+    Suite="Samples"
+    Alias="PingHistogram"
+  >
+    <RunStep Command="\\%CCP_SCHEDULER%\C$\Diag\PingHistogram\runstep.bat" ResultXml="True">
+    </RunStep>
+    <PostStep Command="powershell.exe" ResultXml="False">
+      <Parameters>
+        <Parameter Name="ExecutionPolicy" Value="Bypass" Format="-{0} {1}"/>
+        <Parameter Name="Command" Value="&amp; {\\%CCP_SCHEDULER%\C$\Diag\PingHistogram\poststep.ps1}" Format="-{0} {1}"/>
+      </Parameters>
+    </PostStep>
+  </DiagnosticTest>
+</DiagnosticTests>

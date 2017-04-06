@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="GenericService.GenericServiceWrapper" CodeBehind="GenericServiceWrapper.cs" %>

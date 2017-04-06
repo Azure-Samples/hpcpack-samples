@@ -1,0 +1,87 @@
+lmstat - Copyright (c) 1989-2005 Macrovision Europe Ltd. and/or Macrovision Corporation. All Rights Reserved.
+Flexible License Manager status on Wed 1/27/2010 17:11
+
+[Detecting lmgrd processes...]
+License server status: 1700@hpcisvlicsrv
+    License file(s) on hpcisvlicsrv: C:\Licenses\Eclipse\microsoft-10-03-31.dat:
+
+hpcisvlicsrv: license server UP (MASTER) v10.8
+
+Vendor daemon status (on hpcisvlicsrv):
+
+     slbfd: UP v10.8
+
+Feature usage info:
+
+Users of fs_fracturereservoir:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of fs_multicore:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of co2_eor_storage:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of ecl_multiple_realisation:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of fs_multiple_realisation:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of prodopt:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of resopt:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of multiple_realisation:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of coalbed:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of compositional:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of datacheck:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of eclipse:  (Total of 100 licenses issued;  Total of 0 licenses in use)
+
+Users of flux:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of foam:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of friction:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of frontsim:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of fs_iorscale:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of gasfield:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of gaslift:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of gasquality:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of geomechanics:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of gioption:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of graf:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of grid:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of lgr:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of multisegwells:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of networks:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of openeclipse:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of parallel:  (Total of 1024 licenses issued;  Total of 0 licenses in use)
+
+Users of polymers:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of rescoupling:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of solvents:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of surfactant:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of thermal:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of tracer:  (Total of 20 licenses issued;  Total of 0 licenses in use)
+
+Users of Petrel_SeismicServerNodeW:  (Total of 256 licenses issued;  Total of 0 licenses in use)
+

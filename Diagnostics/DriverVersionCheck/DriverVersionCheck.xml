@@ -1,0 +1,35 @@
+<DiagnosticTests>
+  <DiagnosticTest
+        Name="Driver Version Check"
+        Description="Verify that the network driver version matches an expected value"
+        Company="Microsoft"
+        Suite="Samples"
+        Alias="DriverVersionCheck"
+    >
+  <Parameters>
+    <Parameter 
+        Name="Network"
+        Type="String"
+        Visibility="True"
+        Description="Which network to check driver version for"
+        AllowedValues="Private,Enterprise,Application"
+        DefaultValue="Private"
+        UseOnlyInStep="RunStep"/>
+    <Parameter 
+        Name="DriverVersion"
+        Type="String"
+        Visibility="True"
+        Description="Expected driver version (literal value or regular expression)"
+        DefaultValue="6.*"
+        UseOnlyInStep="PostStep"/>
+    </Parameters>
+    <AutoGenerateResult TestType="Comparison" ExpectedValue="DriverVersion"/>
+    <PreStep Command="powershell.exe" ResultXml="False">
+        <Parameters>
+          <Parameter Name="ExecutionPolicy" Value="Bypass" Format="-{0} {1}"/>
+          <Parameter Name="Command" Value="&amp; {Add-PsSnapIn Microsoft.HPC; \\%CCP_SCHEDULER%\\c$\Diag\DriverVersionCheck\DriverVersionCheckPreStep.ps1}" Format="-{0} {1}"/>
+        </Parameters>
+    </PreStep>
+    <RunStep Command="\\%CCP_SCHEDULER%\c$\Diag\DriverVersionCheck\DriverVersionCheckRunStep.cmd"/>
+  </DiagnosticTest>
+</DiagnosticTests>

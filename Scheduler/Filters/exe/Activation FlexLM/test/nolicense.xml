@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Job Version="3.000" Id="3" State="Validating" SubmitTime="2/4/2010 9:47:52 PM" CreateTime="2/4/2010 9:47:52 PM" UnitType="Core" Owner="NTDEV\colinw" UserName="NTDEV\colinw" Project="" JobType="Batch" JobTemplate="Default" ErrorMessage="" ErrorCode="0" ErrorParams="" OrderBy="" RequestCancel="None" RequeueCount="0" AutoRequeueCount="0" FailureReason="None" PendingReason="None" Progress="0" ProgressMessage="" MinCores="1" MaxCores="1" NotifyOnStart="false" NotifyOnCompletion="false" xmlns="http://schemas.microsoft.com/HPCS2008R2/scheduler/">
+    <Dependencies />
+    <Tasks>
+        <Task Version="3.000" Id="3" ParentJobId="3" State="Submitted" UnitType="Core" NiceId="1" CommandLine="hostname" RequestCancel="None" RequeueCount="0" FailureReason="None" PendingReason="None" StartValue="0" EndValue="0" IncrementValue="1" GroupId="3" SubmitTime="2/4/2010 9:47:52 PM" CreateTime="2/4/2010 9:47:52 PM" ErrorMessage="" ErrorCode="0" ErrorParams="" MinCores="1" MaxCores="1" AutoRequeueCount="0" Type="Basic" />
+    </Tasks>
+</Job>

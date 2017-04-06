@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Job Version="3.000" Id="8" State="Validating" SubmitTime="2/4/2010 9:59:03 PM" CreateTime="2/4/2010 9:59:02 PM" UnitType="Node" Owner="NTDEV\colinw" UserName="NTDEV\colinw" Project="" JobType="Batch" JobTemplate="Default" SoftwareLicense="fs_multicore:6" ErrorMessage="" ErrorCode="0" ErrorParams="" OrderBy="" RequestCancel="None" RequeueCount="0" AutoRequeueCount="0" FailureReason="None" PendingReason="None" AutoCalculateMax="false" AutoCalculateMin="false" Progress="0" ProgressMessage="" MinNodes="2" MaxNodes="32" NotifyOnStart="false" NotifyOnCompletion="false" xmlns="http://schemas.microsoft.com/HPCS2008R2/scheduler/">
+    <Dependencies />
+    <Tasks>
+        <Task Version="3.000" Id="8" ParentJobId="8" State="Submitted" UnitType="Node" NiceId="1" CommandLine="mpiexec fs.exe" RequestCancel="None" RequeueCount="0" FailureReason="None" PendingReason="None" StartValue="0" EndValue="0" IncrementValue="1" GroupId="8" SubmitTime="2/4/2010 9:59:03 PM" CreateTime="2/4/2010 9:59:02 PM" ErrorMessage="" ErrorCode="0" ErrorParams="" MinNodes="2" MaxNodes="32" AutoRequeueCount="0" Type="Basic" />
+    </Tasks>
+</Job>

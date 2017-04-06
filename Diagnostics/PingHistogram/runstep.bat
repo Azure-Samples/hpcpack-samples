@@ -1,0 +1,2 @@
+@ECHO OFF
+ping %CCP_SCHEDULER%

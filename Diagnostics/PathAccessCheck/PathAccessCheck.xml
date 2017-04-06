@@ -1,0 +1,26 @@
+<DiagnosticTests>
+  <DiagnosticTest
+        Name="Path Access Check"
+        Description="Verify that a file path exists on every node and a user credential has access to it"
+        Company="Microsoft"
+        Suite="Samples"
+        Alias="PathAccessCheck"
+    >
+    <Parameters>
+      <Parameter Name="Path" 
+                 Type="String" 
+                 Visibility="True" 
+                 Description="The path to check access to. The default is C:" 
+                 DefaultValue="C:"
+                 Format="{1}"
+                 UseOnlyInStep="RunStep"/>
+    </Parameters>
+    <RunStep Command="\\%CCP_SCHEDULER%\c$\Diag\PathAccessCheck\PathAccessCheckRunStep.cmd" ResultXml="True"/>
+    <PostStep Command="powershell.exe" ResultXml="False">
+      <Parameters>
+        <Parameter Name="ExecutionPolicy" Value="Bypass" Format="-{0} {1}"/>
+        <Parameter Name="Command" Value="&amp; {Add-PsSnapIn Microsoft.HPC; \\%CCP_SCHEDULER%\\c$\Diag\PathAccessCheck\PathAccessCheckPostStep.ps1}" Format="-{0} {1}"/>
+      </Parameters>
+    </PostStep>
+  </DiagnosticTest>
+</DiagnosticTests>
