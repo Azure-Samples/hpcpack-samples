@@ -54,7 +54,7 @@ namespace RestClient
             string credPassword = "YourPasswordHere";
 
 
-            bool credentialsAreCachedOnHN = true;  // set to true if your creds were cached in the HN by ClusterManager, etc.
+            bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
 
                 /*
                  *  "Basic" Credentials:
@@ -177,7 +177,6 @@ namespace RestClient
             List<RestProp> createJobProps = new List<RestProp>();
 
             createJobProps.Add(new RestProp("MinNodes", "1"));
-            createJobProps.Add(new RestProp("MinNodes", "1"));
             createJobProps.Add(new RestProp("MaxNodes", "3"));
             createJobProps.Add(new RestProp("UnitType", "2")); // JobUnitType.Node
             createJobProps.Add(new RestProp("AutoCalculateMax", "false"));
@@ -196,6 +195,7 @@ namespace RestClient
                 HandleAnyHttpErrors(response);
 
                 jobId = GetIntResponse(response);
+                Console.WriteLine($"The created job id is {jobId}.");
 
                 response.GetResponseStream().Close();
                 response.Close();
@@ -319,7 +319,7 @@ namespace RestClient
             try
             {
                 // first we fetch a known job in the job xml format
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Job/" + jobId + "?Render=HpcJobXml", "GET");
+                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Job/" + jobId + "?Render=RestPropRender", "GET");
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
 
                 HandleAnyHttpErrors(response);
@@ -374,6 +374,8 @@ namespace RestClient
             DisplayRowset(jobs);
 
             #endregion
+
+            Console.WriteLine("OK!");
         }
         
         /// <summary>
@@ -671,7 +673,7 @@ namespace RestClient
                                 object sp3ErrorBodyObj = dcsv3SP3.ReadObject(responseStream);
                                 HpcWebServiceFault fault = sp3ErrorBodyObj as HpcWebServiceFault;
 
-                                message = "V3SP3 Error body was: Code" + fault.Code + ", Message = " + fault.Message;
+                                message = "V3SP3 Error body was: Code = " + fault.Code + ", Message = " + fault.Message;
                             }
                             catch (Exception)
                             {
@@ -887,6 +889,8 @@ namespace RestClient
 
         public static HttpWebRequest CreateRequest(string uri, string method)
         {
+            Console.WriteLine($"{method} \"{uri}\"");
+
             HttpWebRequest req = HttpWebRequest.Create(uri) as HttpWebRequest;
 
             req.Credentials = RequestFactory.Credentials;
