@@ -17,13 +17,6 @@ using System.Text;
 
 /*
  * The following sample sources no longer require the REST Starter Kit.
- * 
- * The variable "RESTDiscoveryBase" must be set to point to your HPC REST service.
- * 
- * A choice must be made for the type of credentials to use.  An exception is thrown if this is not done.
- * Credential choices are:
- *      Basic:  fill in the provided username and password variables.  Uncomment the appropriate line.
- *      NTLM:   uncomment the appropriate line.
  *      
  * In addition, the variable "credentialsAreCachedOnHN" can be set:
  *      true: if the credentials (ntlm or basic) are cached on the head node
@@ -38,36 +31,84 @@ namespace RestClient
         const string QueryIdQueryParam = "QueryId";
         const string QueryIdHeader = ContinuationHeader + QueryIdQueryParam;
 
-        const string RESTDiscoveryBase = "https://YourRESTServerNameHere/WindowsHpc";
+        static void ShowHelp()
+        {
+            string help = @"
+Usage:
+{0} -c <server name> -u <user name> -p <password> [-C]
+
+Options:
+-c HPC server name to connect to.
+-u Name of a HPC user on the server.
+-p Password of the user.
+-C The switch specifies that the user credentail is cached on the HPC server. It's not by default.
+";
+            Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
+        }
 
         static void Main(string[] args)
         {
+            string credUserName = null;
+            string credPassword = null;
+            bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
+            string serverName = null;
+
+            #region // Parse command line
+            for (int i = 0; i < args.Length; i++)
+            {
+                switch (args[i])
+                {
+                    case "-u":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        credUserName = args[i];
+                        break;
+                    case "-p":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        credPassword = args[i];
+                        break;
+                    case "-c":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        serverName = args[i];
+                        break;
+                    case "-C":
+                        credentialsAreCachedOnHN = true;
+                        break;
+                    default:
+                        ShowHelp();
+                        return;
+                }
+            }
+
+            if (credUserName == null || credPassword == null || serverName == null)
+            {
+                ShowHelp();
+                return;
+            }
+            #endregion
+
+            ICredentials credsBasic = new NetworkCredential(credUserName, credPassword);
+            RequestFactory.Credentials = credsBasic;
+            string baseAddr = $"https://{serverName}/WindowsHpc";
+            RestRow[] nodeGroupRows = null;
+            int jobId = 0;
+
             // this disables enforcement of certificat trust chains which
             // enables the use of self-signed certs.
             // comment out this line to enforce trusted chains between your REST service and
             // REST clients.
             ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(RequestFactory.DisableTrustChainEnforecment);
-
-            // if you wish to use Basic Authentication, fill in the values below
-
-            string credUserName = "YourUsernameHere";
-            string credPassword = "YourPasswordHere";
-
-
-            bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
-
-                /*
-                 *  "Basic" Credentials:
-                */
-            ICredentials credsBasic = new NetworkCredential(credUserName, credPassword);
-          
-                // Pick your prefered credentials below:
-            RequestFactory.Credentials = credsBasic;
-           
-            string baseAddr = RESTDiscoveryBase;
-            RestRow[] nodeGroupRows = null;
-            int jobId = 0;
-
 
             #region // GET Nodegroup list
 
