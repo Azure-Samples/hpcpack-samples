@@ -17,31 +17,86 @@ namespace HPCSchedulerBasics
         static ISchedulerTask task;
         static ManualResetEvent jobFinishedEvent = new ManualResetEvent(false);
 
-        static void Main(string[] args)
+        static void ShowHelp()
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string help = @"
+Usage:
+{0} [-c <cluster name>] [-u <user name>] [-d]
 
-            if (args.Length > 0)
+Options:
+-c Provide a HPC cluster name to connect to. The default value is %CCP_SCHEDULER%.
+-u Provide a user name to connect as that user.
+-d Run in debug mode.
+";
+            Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
+        }
+
+        static int Main(string[] args)
+        {
+            bool debug = false;
+            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string userName = null;
+
+            for (int i = 0; i < args.Length; i++)
             {
-                clusterName = args[0];
+                switch (args[i])
+                {
+                    case "-d":
+                        debug = true;
+                        break;
+                    case "-u":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return 1;
+                        }
+                        userName = args[i];
+                        break;
+                    case "-c":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return 1;
+                        }
+                        clusterName = args[i];
+                        break;
+                    default:
+                        ShowHelp();
+                        return 1;
+                }
+            }
+
+            if (debug)
+            {
+                Console.Write("Press any key to start...");
+                Console.Read();
             }
 
             // Create a scheduler object to be used to 
             // establish a connection to the scheduler on the headnode
             using (IScheduler scheduler = new Scheduler())
             {
-                // Connect to the scheduler
-                Console.WriteLine("Connecting to {0}...", clusterName);
                 try
                 {
-                    scheduler.Connect(clusterName);
+                    if (userName != null)
+                    {
+                        // Connect to the scheduler as another user
+                        Console.WriteLine("Connecting to {0} as {1}...", clusterName, userName);
+                        scheduler.ConnectServiceAsClient(clusterName, () => userName);
+                    }
+                    else
+                    {
+                        // Connect to the scheduler
+                        Console.WriteLine("Connecting to {0}...", clusterName);
+                        scheduler.Connect(clusterName);
+                    }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine("Could not connect to the scheduler: {0}", e.Message);
-                    return; //abort if no connection could be made
+                    return 1; //abort if no connection could be made
                 }
-                
+
                 //Create a job to submit to the scheduler
                 //the job will be equivalent to the CLI command: job submit /numcores:1-1 "echo hello world"
                 job = scheduler.CreateJob() ;
@@ -90,6 +145,8 @@ namespace HPCSchedulerBasics
 
                 //Close the connection
                 scheduler.Close();
+
+                return 0;
             } //Call scheduler.Dispose() to free the object when finished
         }
 
