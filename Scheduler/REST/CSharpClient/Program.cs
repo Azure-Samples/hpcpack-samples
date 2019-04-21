@@ -1,5 +1,5 @@
-﻿// Copyright © Microsoft Corporation.  All Rights Reserved.
-// This code released under the terms of the 
+// Copyright © Microsoft Corporation.  All Rights Reserved.
+// This code released under the terms of the
 // MICROSOFT LIMITED PUBLIC LICENSE version 1.1 (MS-LPL, http://go.microsoft.com/?linkid=9791213.)
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
@@ -8,16 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Security;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization;
-using System.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.ServiceModel.Web;
-using System.Text;
+using System.Threading.Tasks;
 
 /*
  * The following sample sources no longer require the REST Starter Kit.
- *      
+ *
  * In addition, the variable "credentialsAreCachedOnHN" can be set:
  *      true: if the credentials (ntlm or basic) are cached on the head node
  *      false: otherwise.
@@ -30,6 +28,11 @@ namespace RestClient
         const string ContinuationHeader = "x-ms-continuation-";
         const string QueryIdQueryParam = "QueryId";
         const string QueryIdHeader = ContinuationHeader + QueryIdQueryParam;
+
+        static void Main(string[] args)
+        {
+            MainAsync(args).GetAwaiter().GetResult();
+        }
 
         static void ShowHelp()
         {
@@ -46,7 +49,7 @@ Options:
             Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
         }
 
-        static void Main(string[] args)
+        static async Task MainAsync(string[] args)
         {
             string credUserName = null;
             string credPassword = null;
@@ -99,43 +102,35 @@ Options:
             #endregion
 
             ICredentials credsBasic = new NetworkCredential(credUserName, credPassword);
-            RequestFactory.Credentials = credsBasic;
             string baseAddr = $"https://{serverName}/WindowsHpc";
             RestRow[] nodeGroupRows = null;
             int jobId = 0;
 
-            // this disables enforcement of certificat trust chains which
-            // enables the use of self-signed certs.
-            // comment out this line to enforce trusted chains between your REST service and
-            // REST clients.
-            ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(RequestFactory.DisableTrustChainEnforecment);
+            // This disables enforcement of certificat trust chains which enables the use of self-signed certs.
+            // Comment out this line to enforce trusted chains between your REST service and REST clients.
+            ServicePointManager.ServerCertificateValidationCallback = (obj, cert, chain, err) => true;
+
+            var handler = new HttpClientHandler() { Credentials = credsBasic };
+            var httpClient = new HttpClient(handler);
+            httpClient.DefaultRequestHeaders.Add("api-version", "2012-11-01.4.0");
 
             #region // GET Nodegroup list
-
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Nodegroups", "GET");
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                nodeGroupRows = GetRestRowsResponse(response.GetResponseStream());
-
+                string url = $"{baseAddr}/Nodegroups";
+                Console.WriteLine($"GET {url}");
+                var response = await httpClient.GetAsync(url);
+                await HandleHttpErrorAsync(response);
+                nodeGroupRows = await GetObjectFromResponseAsync<RestRow[]>(response);
                 Console.WriteLine("Nodegroups are:");
-
                 foreach (RestRow row in nodeGroupRows)
                 {
                     foreach (RestProp prop in row.Props)
                     {
                         Console.WriteLine(prop.Value);
                     }
-
                     Console.WriteLine();
                 }
-
-                response.GetResponseStream().Close();
-                response.Close();
             }
             catch (Exception ex)
             {
@@ -146,29 +141,21 @@ Options:
             string[] nodesInGroup = null;
 
             #region GET a single Nodegroup
-
             try
             {
                 // take the 0th nodegroup and fetch list of nodes
                 string nodegroup = nodeGroupRows[0].Props[0].Value;
-                HttpWebRequest  request = RequestFactory.CreateRequest(baseAddr + "/Nodegroup/" + nodegroup, "GET");
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                nodesInGroup = GetStringArrayResponse(response);
-
+                string url = $"{baseAddr}/Nodegroup/{nodegroup}";
+                Console.WriteLine($"GET {url}");
+                var response = await httpClient.GetAsync(url);
+                await HandleHttpErrorAsync(response);
+                nodesInGroup = await GetObjectFromResponseAsync<string[]>(response);
                 Console.WriteLine("For Nodegroup: " + nodegroup);
-
                 foreach (string node in nodesInGroup)
                 {
                     Console.WriteLine(node);
                 }
-
                 Console.WriteLine();
-
-                response.GetResponseStream().Close();
-                response.Close();
             }
             catch (Exception ex)
             {
@@ -177,29 +164,21 @@ Options:
             #endregion
 
             #region // GET a single Node
-
             try
             {
                 // take the 0th node and fetch list of properties
                 string node = nodesInGroup[0];
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Node/" + node, "GET");
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                RestProp[] nodeProperties = GetRestProps(response);
-
+                string url = $"{baseAddr}/Node/{node}";
+                Console.WriteLine($"GET {url}");
+                var response = await httpClient.GetAsync(url);
+                await HandleHttpErrorAsync(response);
+                var nodeProperties = await GetObjectFromResponseAsync<RestProp[]>(response);
                 Console.WriteLine("For Node: " + node);
-
                 foreach (RestProp prop in nodeProperties)
                 {
                     Console.WriteLine("Name: " + prop.Name + ", Value = " + prop.Value);
                 }
-
                 Console.WriteLine();
-
-                response.GetResponseStream().Close();
-                response.Close();
             }
             catch (Exception ex)
             {
@@ -209,14 +188,13 @@ Options:
 
             #region // GET the list of Nodes with Continuation Headers
 
-            RestRow[] nodes = ReadCollectionWithContinuation(baseAddr + "/Nodes", "Properties=Name,Id,MemorySize");
+            RestRow[] nodes = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Nodes", "Properties=Name,Id,MemorySize");
 
             #endregion // GET the list of Nodes with Continuation Headers
 
             #region Create and submit job using properties
 
             List<RestProp> createJobProps = new List<RestProp>();
-
             createJobProps.Add(new RestProp("MinNodes", "1"));
             createJobProps.Add(new RestProp("MaxNodes", "3"));
             createJobProps.Add(new RestProp("UnitType", "2")); // JobUnitType.Node
@@ -227,19 +205,13 @@ Options:
             // first we create an empty job
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Jobs", "POST");
+                string url = $"{baseAddr}/Jobs";
+                Console.WriteLine($"POST {url}");
+                var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(createJobProps.ToArray()));
+                await HandleHttpErrorAsync(response);
 
-                WriteRestPropsToRequestBody(request, createJobProps.ToArray());
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                jobId = GetIntResponse(response);
+                jobId = await GetObjectFromResponseAsync<int>(response);
                 Console.WriteLine($"The created job id is {jobId}.");
-
-                response.GetResponseStream().Close();
-                response.Close();
             }
             catch (Exception ex)
             {
@@ -249,40 +221,30 @@ Options:
             // we now have an empty job, now add task
 
             List<RestProp> taskProps = new List<RestProp>();
-            
             taskProps.Add(new RestProp("MinNodes", "1"));
             taskProps.Add(new RestProp("MaxNodes", "3"));
             taskProps.Add(new RestProp("CommandLine", "hostname"));
-            
+
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Job/" + jobId + "/Tasks","POST");
-
-                WriteRestPropsToRequestBody(request, taskProps.ToArray());
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                response.GetResponseStream().Close();
-                response.Close();
+                string url = $"{baseAddr}/Job/{jobId}/Tasks";
+                Console.WriteLine($"POST {url}");
+                var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(taskProps.ToArray()));
+                await HandleHttpErrorAsync(response);
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
 
-                // here we construct any desired submit properties...
+            // here we construct any desired submit properties...
             List<RestProp> submitJobPropList = new List<RestProp>();
-
             submitJobPropList.Add(new RestProp("RunUntilCanceled", "true"));  // we will cancel this job below via REST call
 
-                // add any other properties here
-
+            // add any other properties here
             if (!credentialsAreCachedOnHN)
             {
                 //  Supply these properties if your credentials are not cached on the head node
-
                 submitJobPropList.Add(new RestProp("UserName", credUserName));
                 submitJobPropList.Add(new RestProp("Password", credPassword));
             }
@@ -290,16 +252,10 @@ Options:
             // submit the job
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(string.Format(baseAddr + "/Job/{0}/Submit", jobId), "POST");
-
-                WriteRestPropsToRequestBody(request, submitJobPropList.ToArray());
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                response.GetResponseStream().Close();
-                response.Close();
+                string url = $"{baseAddr}/Job/{jobId}/Submit";
+                Console.WriteLine($"POST {url}");
+                var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(submitJobPropList.ToArray()));
+                await HandleHttpErrorAsync(response);
             }
             catch (Exception ex)
             {
@@ -307,21 +263,13 @@ Options:
             }
             #endregion
 
-
-            #region // cancel job
-
+            #region // Cancel job
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(string.Format(baseAddr + "/Job/{0}/Cancel?Forced={1}", jobId, false), "POST");
-
-                WriteStringToRequestBody(request, "I canceled it!");
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                response.GetResponseStream().Close();
-                response.Close();
+                string url = $"{baseAddr}/Job/{jobId}/Cancel?Forced=false";
+                Console.WriteLine($"POST {url}");
+                var response = await httpClient.PostAsync(url, MakeXmlContentFromObject("I canceled it!"));
+                await HandleHttpErrorAsync(response);
             }
             catch (Exception ex)
             {
@@ -330,28 +278,24 @@ Options:
             #endregion // cancel job
 
 
-            #region Check job properties
+            #region // Check job properties
 
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Job/" + jobId + "?Properties=Id,Name,State", "GET");
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                RestProp[] props = GetRestPropsResponse(response.GetResponseStream());
+                string url = $"{baseAddr}/Job/{jobId}?Properties=Id,Name,State";
+                Console.WriteLine($"GET {url}");
+                var response = await httpClient.GetAsync(url);
+                await HandleHttpErrorAsync(response);
+                var props = await GetObjectFromResponseAsync<RestProp[]>(response);
 
                 // do something with the props
-
-                response.GetResponseStream().Close();
-                response.Close();
             }
             catch (Exception ex)
             {
                 HandleException(ex);
             }
 
-            #endregion 
+            #endregion
 
             #region // Create job using XML
 
@@ -359,16 +303,11 @@ Options:
 
             try
             {
-                // first we fetch a known job in the job xml format
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Job/" + jobId + "?Render=RestPropRender", "GET");
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
-
-                xml = ReadResponseBodyAsString(response);
-
-                response.GetResponseStream().Close();
-                response.Close();
+                string url = $"{baseAddr}/Job/{jobId}?Render=RestPropRender";
+                Console.WriteLine($"GET {url}");
+                var response = await httpClient.GetAsync(url);
+                await HandleHttpErrorAsync(response);
+                xml = await response.Content.ReadAsStringAsync();
             }
             catch(Exception ex)
             {
@@ -378,20 +317,11 @@ Options:
             // now we construct a request and write the xml to the body
             try
             {
-                HttpWebRequest request = RequestFactory.CreateRequest(baseAddr + "/Jobs/JobFile", "POST");
-
-                request.ContentType = "text/xml";
-
-                WriteStringContentsToRequestBody(request, xml);
-
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-
-                HandleAnyHttpErrors(response);
- 
-                jobId = GetIntResponse(response);
-
-                response.GetResponseStream().Close();
-                response.Close();
+                string url = $"{baseAddr}/Jobs/JobFile";
+                Console.WriteLine($"POST {url}");
+                var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(xml));
+                await HandleHttpErrorAsync(response);
+                jobId = await GetObjectFromResponseAsync<int>(response);
             }
             catch (Exception ex)
             {
@@ -401,16 +331,16 @@ Options:
 
             #region List Jobs and use of Continuation Headers
 
-            RestRow[] jobs = ReadCollectionWithContinuation(baseAddr + "/Jobs", "Properties=Id,Name,State");
+            RestRow[] jobs = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Jobs", "Properties=Id,Name,State");
 
             DisplayRowset(jobs);
 
-            #endregion 
+            #endregion
 
             #region List Jobs filtered by JobState
 
                 // here we requeset all canceled jobs via $filter= and Render=
-            jobs = ReadCollectionWithContinuation(baseAddr + "/Jobs", "Render=RestPropRender&$filter=JobState eq Canceled");
+            jobs = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Jobs", "Render=RestPropRender&$filter=JobState eq Canceled");
 
             DisplayRowset(jobs);
 
@@ -418,40 +348,40 @@ Options:
 
             Console.WriteLine("OK!");
         }
-        
+
         /// <summary>
         /// This routine will traverse a collection utilizing the continuation tokens/headers.
         /// This can be called for any of the APIs that use continuation headers.
-        /// 
+        ///
         /// On Retry:
         ///     Continuation spans several calls any of which can fail.
         ///     It is important to remember that the REST API keeps enough state
         ///     to satisfy continuation calls.  If this state is lost, continuation cannot
         ///     complete.
-        ///     
+        ///
         ///     When the REST API is hosted in "Windows Azure HPC Scheduler" (WAHS) there
         ///     are often several instances of the REST API service in a load-balanced
         ///     configuration.  Any one of these instances can fail or be rebooted for
         ///     host patching, etc.
-        ///     
+        ///
         ///     The following continuation code will attempt to retry any single
         ///     continuation call.  This will compensate for transient network
         ///     issues, etc.
-        ///     
+        ///
         ///     After the final attempted retry fails, the entire operation is restarted
         ///     once.  This will provide recovery for when the authoritative instance in WAHS
         ///     is lost (failure or patch-reboot, etc.).
         /// </summary>
         /// <param name="baseURI"></param>
         /// <param name="baseQueryString"></param>
-        public static RestRow[] ReadCollectionWithContinuation(string baseURI, string baseQueryString)
+        public static async Task<RestRow[]> ReadCollectionWithContinuationAsync(HttpClient httpClient, string baseURI, string baseQueryString)
         {
             RestRow[] rows = null;
 
             try
             {
                 // if initial attempt succeeds then return results
-                rows = ReadCollectionWithContinuationAndRetry(baseURI, baseQueryString);
+                rows = await ReadCollectionWithContinuationAndRetryAsync(httpClient, baseURI, baseQueryString);
             }
             catch (Exception ex)
             {
@@ -461,7 +391,7 @@ Options:
                 try
                 {
                     // restart entire operation and try again
-                    rows = ReadCollectionWithContinuationAndRetry(baseURI, baseQueryString);
+                    rows = await ReadCollectionWithContinuationAndRetryAsync(httpClient, baseURI, baseQueryString);
                 }
                 catch (Exception ex2)
                 {
@@ -480,7 +410,7 @@ Options:
         /// <param name="baseURI"></param>
         /// <param name="baseQueryString"></param>
         /// <returns></returns>
-        public static RestRow[] ReadCollectionWithContinuationAndRetry(string baseURI, string baseQueryString)
+        public static async Task<RestRow[]> ReadCollectionWithContinuationAndRetryAsync(HttpClient httpClient, string baseURI, string baseQueryString)
         {
             List<RestRow> rows = new List<RestRow>();
             string queryId = null;
@@ -502,18 +432,17 @@ Options:
             }
 
             int retryCount = 0;
-            bool proceedToNextContinuation = true;  // used during retry. 
+            bool proceedToNextContinuation = true;  // used during retry.
             string uri = combinedURI;
 
             while (true)
             {
-                HttpWebResponse response = null;
+                HttpResponseMessage response = null;
 
                 try
                 {
-                    HttpWebRequest request = RequestFactory.CreateRequest(uri, "GET");
-
-                    response = request.GetResponse() as HttpWebResponse;
+                    Console.WriteLine($"GET {uri}");
+                    response = await httpClient.GetAsync(uri);
                 }
                 catch (Exception ex)
                 {
@@ -535,21 +464,21 @@ Options:
 
                 if (proceedToNextContinuation)
                 {
-                    Stream responseStream = response.GetResponseStream();
-                    RestRow[] restRowset = GetRestRowsResponse(responseStream);
-
-                    responseStream.Close();
-                    response.Close();
-
+                    RestRow[] restRowset = await GetObjectFromResponseAsync<RestRow[]>(response);
                     rows.AddRange(restRowset);
 
                     // the continuation header contains the continuation token.
                     // fetch it here and place on query string of next call
-                    queryId = response.Headers[QueryIdHeader];
-
-                    // continuation is complete when no continuation header is returned
-                    if (queryId == null)
+                    IEnumerable<string> values;
+                    if (response.Headers.TryGetValues(QueryIdHeader, out values)) {
+                        foreach (var id in values)
+                        {
+                            queryId = id;
+                        }
+                    }
+                    else
                     {
+                        // continuation is complete when no continuation header is returned
                         break;
                     }
 
@@ -570,7 +499,7 @@ Options:
             /// <summary>
             /// Opinions vary widely on this topic.  In general it is polite to avoid
             /// having all clients immediately DoS the REST service when errors begin occuring.
-            /// 
+            ///
             /// Many prefer a bounded exponential backoff for production.
             /// </summary>
             /// <returns></returns>
@@ -656,22 +585,32 @@ Options:
 
         #region Utils
 
-        public static RestRow[] GetRestRowsResponse(Stream responseStream)
+        static T StreamToObject<T>(Stream stream)
         {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(RestRow[]));
-
-            RestRow[] rows = dcs.ReadObject(responseStream) as RestRow[];
-
-            return rows;
+            var dcs = new DataContractSerializer(typeof(T));
+            return (T)dcs.ReadObject(stream);
         }
 
-        public static RestProp[] GetRestPropsResponse(Stream responseStream)
+        static Stream ObjectToStream<T>(T obj)
         {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(RestProp[]));
+            DataContractSerializer dcs = new DataContractSerializer(typeof(T));
+            Stream s = new MemoryStream();
+            dcs.WriteObject(s, obj);
+            s.Flush();
+            s.Seek(0, SeekOrigin.Begin);
+            return s;
+        }
 
-            RestProp[] props = dcs.ReadObject(responseStream) as RestProp[];
+        static async Task<T> GetObjectFromResponseAsync<T>(HttpResponseMessage message)
+        {
+            return StreamToObject<T>(await message.Content.ReadAsStreamAsync());
+        }
 
-            return props;
+        static HttpContent MakeXmlContentFromObject<T>(T obj)
+        {
+            var content = new StreamContent(ObjectToStream(obj));
+            content.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/xml") { CharSet = "utf-8" };
+            return content;
         }
 
         static void DecodeAndDisplayException(Exception ex)
@@ -751,127 +690,18 @@ Options:
             }
         }
 
-        public static void HandleAnyHttpErrors(HttpWebResponse response)
+        public static async Task HandleHttpErrorAsync(HttpResponseMessage response)
         {
             HttpStatusCode statusCode = response.StatusCode;
-
             if (statusCode != HttpStatusCode.OK)
             {
-                string message = GetErrorResponse(response);
-
+                string message = await response.Content.ReadAsStringAsync();
                 Console.WriteLine("Error: Code = {0}, Message = {1}", statusCode.ToString(), message);
                 Console.WriteLine("Hit return to exit.");
-
                 Environment.Exit(-1);
             }
         }
 
-        public static RestProp[] GetRestProps(HttpWebResponse response)
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(RestProp[]));
-            Stream respStream = response.GetResponseStream();
-            RestProp[] props = dcs.ReadObject(respStream) as RestProp[];
-
-            return props;
-        }
-
-
-        public static string ReadResponseBodyAsString(HttpWebResponse response)
-        {
-            Stream respStream = response.GetResponseStream();
-
-            using (StreamReader reader = new StreamReader(respStream))
-            {
-                string retString = reader.ReadToEnd();
-
-                reader.Close();
-                respStream.Close();
-
-                return retString;
-            }
-        }
-
-        
-        public static string GetErrorResponse(HttpWebResponse response)
-        {
-            string temp = ReadResponseBodyAsString(response);
-
-            return temp;
-        }
-
-        static string[] GetStringArrayResponse(HttpWebResponse response)
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(string[]));
-            Stream respStream = response.GetResponseStream();
-            object obj = dcs.ReadObject(respStream);
-            string[] strings = obj as string[];
-
-            return strings;
-        }
-
-        public static int GetIntResponse(HttpWebResponse response)
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(int));
-            Stream respStream = response.GetResponseStream();
-            object obj = dcs.ReadObject(respStream);
-            int i = (int)obj;
-
-            return i;
-        }
-
-        public static void WriteRestPropsToRequestBody(HttpWebRequest request, RestProp[] props)
-        {
-            DataContractSerializer dcs = new DataContractSerializer(typeof(RestProp[]));
-            Stream reqStream = request.GetRequestStream();
-
-            dcs.WriteObject(reqStream, props);
-
-            request.ContentType = "application/xml; charset=utf-8";
-                
-            reqStream.Flush();
-            reqStream.Close();
-        }
-        
-        /// <summary>
-        /// Creates a requeset body that is a serialized string.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="message"></param>
-        public static void WriteStringToRequestBody(HttpWebRequest request, string message)
-        {
-            request.ContentType = "application/xml; charset=utf-8";
-
-            if (string.IsNullOrEmpty(message))  // message body is optional
-            {
-                request.ContentLength = 0;
-            }
-            else
-            {
-                Stream reqStream = request.GetRequestStream();
-                DataContractSerializer dcs = new DataContractSerializer(typeof(string));
-
-                dcs.WriteObject(reqStream, message);
-                reqStream.Flush();
-                reqStream.Close();
-            }
-        }
-
-        /// <summary>
-        /// Writes the contents of a string to the request body.
-        /// </summary>
-        /// <param name="?"></param>
-        /// <param name="?"></param>
-        public static void WriteStringContentsToRequestBody(HttpWebRequest request, string xml)
-        {
-            Stream reqStream = request.GetRequestStream();
-
-            using(StreamWriter writer = new StreamWriter(reqStream, Encoding.UTF8))
-            {
-                writer.Write(xml);
-                writer.Flush();
-            }
-        }
-        
         static void DisplayRowset(RestRow[] rowset)
         {
             bool first = true;
@@ -895,53 +725,5 @@ Options:
         }
 
         #endregion
-    }
-
-
-    /// <summary>
-    /// this helper class will create a fresh HttpWebRequest with
-    /// common configurations applied
-    /// </summary>
-    public static class RequestFactory
-    {
-        private static ICredentials _credentials;
-
-        public static ICredentials Credentials
-        {
-            get { return _credentials; }
-            set { _credentials = value; }
-        }
-
-        /// <summary>
-        /// this callback disables enforcement of x509 certificat trust chains.
-        /// it enables the use of self-signed certs.
-        /// 
-        /// if you desire to enforce trust chains you must not register this callback.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="cert"></param>
-        /// <param name="chain"></param>
-        /// <param name="err"></param>
-        /// <returns></returns>
-        public static bool DisableTrustChainEnforecment(object obj, X509Certificate cert, X509Chain chain, SslPolicyErrors err)
-        {
-            return true;
-        }
-
-        public static HttpWebRequest CreateRequest(string uri, string method)
-        {
-            Console.WriteLine($"{method} \"{uri}\"");
-
-            HttpWebRequest req = HttpWebRequest.Create(uri) as HttpWebRequest;
-
-            req.Credentials = RequestFactory.Credentials;
-
-            // here we add the required version header
-            req.Headers["api-version"] = "2012-11-01.4.0";
-
-            req.Method = method;
-
-            return req;
-        }
     }
 }
