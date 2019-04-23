@@ -185,73 +185,44 @@ When -t, -i -r and -R options are present, AAD is used for authentication; other
 
             for (int i = 0; i < args.Length; i++)
             {
-                switch (args[i])
+                try {
+                    switch (args[i])
+                    {
+                        case "-u":
+                            username = args[++i];
+                            break;
+                        case "-p":
+                            password = args[++i];
+                            break;
+                        case "-t":
+                            tenentid = args[++i];
+                            break;
+                        case "-i":
+                            clientid = args[++i];
+                            break;
+                        case "-r":
+                            resourceid = args[++i];
+                            break;
+                        case "-R":
+                            redirectUri = args[++i];
+                            break;
+                        case "-c":
+                            serverName = args[++i];
+                            break;
+                        case "-C":
+                            credentialsAreCachedOnHN = true;
+                            break;
+                        case "-d":
+                            debug = true;
+                            break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+                catch
                 {
-                    case "-u":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        username = args[i];
-                        break;
-                    case "-p":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        password = args[i];
-                        break;
-                    case "-t":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        tenentid = args[i];
-                        break;
-                    case "-i":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        clientid = args[i];
-                        break;
-                    case "-r":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        resourceid = args[i];
-                        break;
-                    case "-R":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        redirectUri = args[i];
-                        break;
-                    case "-c":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        serverName = args[i];
-                        break;
-                    case "-C":
-                        credentialsAreCachedOnHN = true;
-                        break;
-                    case "-d":
-                        debug = true;
-                        break;
-                    default:
-                        ShowHelp();
-                        return;
+                    ShowHelp();
+                    return;
                 }
             }
 
