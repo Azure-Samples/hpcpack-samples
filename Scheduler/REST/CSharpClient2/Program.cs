@@ -56,7 +56,7 @@ namespace RestClient2
         {
             string help = @"
 Usage:
-{0} -c <server name> -u <user name> -p <password> [-t <tenent id>] [-i <client id>] [-C] [-d]
+{0} -c <server name> -u <user name> -p <password> [-t <tenent id> -i <client id> -r <resource id> [-R <redirect URI>]] [-C] [-d]
 
 Options:
 -c HPC server name to connect to.
@@ -64,11 +64,13 @@ Options:
 -p Password of the user.
 -t Tenent ID of AAD
 -i Client Application ID of AAD
+-r Resource ID of AAD Application, i.e. the App ID URI, like https://sometenent.onmicrosoft.com/someapp
+-R Redirect URI of AAD Client Application. The default value is http://hpcclient
 -C The switch specifies that the user credentail is cached on the HPC server. It's not by default.
 -d Debug mode.
 
 NOTE:
-When -t and -i options are present, AAD is used for authentication; otherwise NTLM is used and -u and -p options must be present.
+When -t, -i -r and -R options are present, AAD is used for authentication; otherwise NTLM is used and -u and -p options must be present.
 ";
             Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
         }
@@ -175,6 +177,8 @@ When -t and -i options are present, AAD is used for authentication; otherwise NT
             string password = null;
             string tenentid = null;
             string clientid = null;
+            string resourceid = null;
+            string redirectUri = "http://hpcclient";
             bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
             string serverName = null;
             bool debug = false;
@@ -215,6 +219,22 @@ When -t and -i options are present, AAD is used for authentication; otherwise NT
                         }
                         clientid = args[i];
                         break;
+                    case "-r":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        resourceid = args[i];
+                        break;
+                    case "-R":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        redirectUri = args[i];
+                        break;
                     case "-c":
                         if (++i == args.Length)
                         {
@@ -235,7 +255,10 @@ When -t and -i options are present, AAD is used for authentication; otherwise NT
                 }
             }
 
-            if (serverName == null || username == null || password == null)
+            if (serverName == null ||
+                (!credentialsAreCachedOnHN && (username == null || password == null)) ||
+                //When any option of AAD is null, then NTML is used and thus username and password must be present
+                ((tenentid == null || clientid == null || resourceid == null) && (username == null || password == null))) 
             {
                 ShowHelp();
                 return;
@@ -247,22 +270,21 @@ When -t and -i options are present, AAD is used for authentication; otherwise NT
                 Console.Read();
             }
 
+            // This disables enforcement of certificat trust chains which enables the use of self-signed certs.
+            // Comment out this line to enforce trusted chains between your REST service and REST clients.
+            ServicePointManager.ServerCertificateValidationCallback = (obj, cert, chain, err) => true;
+
             string token = null;
-            if (tenentid != null && clientid != null)
+            if (tenentid != null && clientid != null && resourceid != null)
             {
                 var ac = new AuthenticationContext($"https://login.microsoftonline.com/{tenentid}");
-                var code = await ac.AcquireDeviceCodeAsync(clientid, clientid);
-                Console.WriteLine(code.Message); //Tell user open an URL in browser and enter a code
-                var result = await ac.AcquireTokenByDeviceCodeAsync(code);
+                var result = await ac.AcquireTokenAsync(resourceid, clientid, new Uri(redirectUri), new PlatformParameters(PromptBehavior.Auto));
                 token = result.AccessToken;
             }
 
-            var cred = new NetworkCredential(username, password);
+            NetworkCredential cred = (username != null && password != null) ? new NetworkCredential(username, password) : null;
             string apiBase = $"https://{serverName}";
-            var handler = new HttpClientHandler() {
-                ClientCertificateOptions = ClientCertificateOption.Manual,
-                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
-            };
+            var handler = new HttpClientHandler();
             if (token == null)
             {
                 //Auth by NTLM
