@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Collections.Generic;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 /*
  * This is a sample client for the new REST API of HPC Pack. Get the API spec at:
@@ -55,14 +56,19 @@ namespace RestClient2
         {
             string help = @"
 Usage:
-{0} -c <server name> -u <user name> -p <password> [-C] [-d]
+{0} -c <server name> -u <user name> -p <password> [-t <tenent id>] [-i <client id>] [-C] [-d]
 
 Options:
 -c HPC server name to connect to.
 -u Name of a HPC user on the server.
 -p Password of the user.
+-t Tenent ID of AAD
+-i Client Application ID of AAD
 -C The switch specifies that the user credentail is cached on the HPC server. It's not by default.
 -d Debug mode.
+
+NOTE:
+When -t and -i options are present, AAD is used for authentication; otherwise NTLM is used and -u and -p options must be present.
 ";
             Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
         }
@@ -167,6 +173,8 @@ Options:
         {
             string username = null;
             string password = null;
+            string tenentid = null;
+            string clientid = null;
             bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
             string serverName = null;
             bool debug = false;
@@ -191,6 +199,22 @@ Options:
                         }
                         password = args[i];
                         break;
+                    case "-t":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        tenentid = args[i];
+                        break;
+                    case "-i":
+                        if (++i == args.Length)
+                        {
+                            ShowHelp();
+                            return;
+                        }
+                        clientid = args[i];
+                        break;
                     case "-c":
                         if (++i == args.Length)
                         {
@@ -211,7 +235,7 @@ Options:
                 }
             }
 
-            if (username == null || password == null || serverName == null)
+            if (serverName == null || username == null || password == null)
             {
                 ShowHelp();
                 return;
@@ -223,16 +247,35 @@ Options:
                 Console.Read();
             }
 
+            string token = null;
+            if (tenentid != null && clientid != null)
+            {
+                var ac = new AuthenticationContext($"https://login.microsoftonline.com/{tenentid}");
+                var code = await ac.AcquireDeviceCodeAsync(clientid, clientid);
+                Console.WriteLine(code.Message); //Tell user open an URL in browser and enter a code
+                var result = await ac.AcquireTokenByDeviceCodeAsync(code);
+                token = result.AccessToken;
+            }
+
             var cred = new NetworkCredential(username, password);
             string apiBase = $"https://{serverName}";
             var handler = new HttpClientHandler() {
-                Credentials = cred,
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             };
+            if (token == null)
+            {
+                //Auth by NTLM
+                handler.Credentials = cred;
+            }
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(apiBase) };
             httpClient.DefaultRequestHeaders.Add("api-version", "2016-11-01.5.0");
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+            if (token != null)
+            {
+                //Auth by AAD
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
             try
             {
