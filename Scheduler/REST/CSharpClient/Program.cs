@@ -29,6 +29,21 @@ namespace RestClient
         const string QueryIdQueryParam = "QueryId";
         const string QueryIdHeader = ContinuationHeader + QueryIdQueryParam;
 
+        static string[] ServerNames { get; set; }
+
+        static int ServerConter { get; set; } = 0;
+
+        static string ApiBase
+        {
+            get
+            {
+                //NOTE: Usually, a load balancer is used to select a backend server. This is a demo
+                //on how to do it on client side when you have no better choice.
+                int index = ServerConter++ % ServerNames.Length;
+                return $"https://{ServerNames[index]}/WindowsHpc";
+            }
+        }
+
         static void Main(string[] args)
         {
             MainAsync(args).GetAwaiter().GetResult();
@@ -41,7 +56,7 @@ Usage:
 {0} -c <server name> -u <user name> -p <password> [-C]
 
 Options:
--c HPC server name to connect to.
+-c HPC server name to connect to. It can be single name or list of names separated by ','.
 -u Name of a HPC user on the server.
 -p Password of the user.
 -C The switch specifies that the user credentail is cached on the HPC server. It's not by default.
@@ -59,38 +74,30 @@ Options:
             #region // Parse command line
             for (int i = 0; i < args.Length; i++)
             {
-                switch (args[i])
+                try
                 {
-                    case "-u":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        credUserName = args[i];
-                        break;
-                    case "-p":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        credPassword = args[i];
-                        break;
-                    case "-c":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        serverName = args[i];
-                        break;
-                    case "-C":
-                        credentialsAreCachedOnHN = true;
-                        break;
-                    default:
-                        ShowHelp();
-                        return;
+                    switch (args[i])
+                    {
+                        case "-u":
+                            credUserName = args[++i];
+                            break;
+                        case "-p":
+                            credPassword = args[++i];
+                            break;
+                        case "-c":
+                            serverName = args[++i];
+                            break;
+                        case "-C":
+                            credentialsAreCachedOnHN = true;
+                            break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+                catch
+                {
+                    ShowHelp();
+                    return;
                 }
             }
 
@@ -101,8 +108,8 @@ Options:
             }
             #endregion
 
+            ServerNames = serverName.Split(',');
             ICredentials credsBasic = new NetworkCredential(credUserName, credPassword);
-            string baseAddr = $"https://{serverName}/WindowsHpc";
             RestRow[] nodeGroupRows = null;
             int jobId = 0;
 
@@ -117,7 +124,7 @@ Options:
             #region // GET Nodegroup list
             try
             {
-                string url = $"{baseAddr}/Nodegroups";
+                string url = $"{ApiBase}/Nodegroups";
                 Console.WriteLine($"GET {url}");
                 var response = await httpClient.GetAsync(url);
                 await HandleHttpErrorAsync(response);
@@ -145,7 +152,7 @@ Options:
             {
                 // take the 0th nodegroup and fetch list of nodes
                 string nodegroup = nodeGroupRows[0].Props[0].Value;
-                string url = $"{baseAddr}/Nodegroup/{nodegroup}";
+                string url = $"{ApiBase}/Nodegroup/{nodegroup}";
                 Console.WriteLine($"GET {url}");
                 var response = await httpClient.GetAsync(url);
                 await HandleHttpErrorAsync(response);
@@ -168,7 +175,7 @@ Options:
             {
                 // take the 0th node and fetch list of properties
                 string node = nodesInGroup[0];
-                string url = $"{baseAddr}/Node/{node}";
+                string url = $"{ApiBase}/Node/{node}";
                 Console.WriteLine($"GET {url}");
                 var response = await httpClient.GetAsync(url);
                 await HandleHttpErrorAsync(response);
@@ -188,7 +195,7 @@ Options:
 
             #region // GET the list of Nodes with Continuation Headers
 
-            RestRow[] nodes = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Nodes", "Properties=Name,Id,MemorySize");
+            RestRow[] nodes = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Nodes", "Properties=Name,Id,MemorySize");
 
             #endregion // GET the list of Nodes with Continuation Headers
 
@@ -205,7 +212,7 @@ Options:
             // first we create an empty job
             try
             {
-                string url = $"{baseAddr}/Jobs";
+                string url = $"{ApiBase}/Jobs";
                 Console.WriteLine($"POST {url}");
                 var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(createJobProps.ToArray()));
                 await HandleHttpErrorAsync(response);
@@ -227,7 +234,7 @@ Options:
 
             try
             {
-                string url = $"{baseAddr}/Job/{jobId}/Tasks";
+                string url = $"{ApiBase}/Job/{jobId}/Tasks";
                 Console.WriteLine($"POST {url}");
                 var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(taskProps.ToArray()));
                 await HandleHttpErrorAsync(response);
@@ -252,7 +259,7 @@ Options:
             // submit the job
             try
             {
-                string url = $"{baseAddr}/Job/{jobId}/Submit";
+                string url = $"{ApiBase}/Job/{jobId}/Submit";
                 Console.WriteLine($"POST {url}");
                 var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(submitJobPropList.ToArray()));
                 await HandleHttpErrorAsync(response);
@@ -266,7 +273,7 @@ Options:
             #region // Cancel job
             try
             {
-                string url = $"{baseAddr}/Job/{jobId}/Cancel?Forced=false";
+                string url = $"{ApiBase}/Job/{jobId}/Cancel?Forced=false";
                 Console.WriteLine($"POST {url}");
                 var response = await httpClient.PostAsync(url, MakeXmlContentFromObject("I canceled it!"));
                 await HandleHttpErrorAsync(response);
@@ -282,7 +289,7 @@ Options:
 
             try
             {
-                string url = $"{baseAddr}/Job/{jobId}?Properties=Id,Name,State";
+                string url = $"{ApiBase}/Job/{jobId}?Properties=Id,Name,State";
                 Console.WriteLine($"GET {url}");
                 var response = await httpClient.GetAsync(url);
                 await HandleHttpErrorAsync(response);
@@ -303,7 +310,7 @@ Options:
 
             try
             {
-                string url = $"{baseAddr}/Job/{jobId}?Render=RestPropRender";
+                string url = $"{ApiBase}/Job/{jobId}?Render=RestPropRender";
                 Console.WriteLine($"GET {url}");
                 var response = await httpClient.GetAsync(url);
                 await HandleHttpErrorAsync(response);
@@ -317,7 +324,7 @@ Options:
             // now we construct a request and write the xml to the body
             try
             {
-                string url = $"{baseAddr}/Jobs/JobFile";
+                string url = $"{ApiBase}/Jobs/JobFile";
                 Console.WriteLine($"POST {url}");
                 var response = await httpClient.PostAsync(url, MakeXmlContentFromObject(xml));
                 await HandleHttpErrorAsync(response);
@@ -331,7 +338,7 @@ Options:
 
             #region List Jobs and use of Continuation Headers
 
-            RestRow[] jobs = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Jobs", "Properties=Id,Name,State");
+            RestRow[] jobs = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Jobs", "Properties=Id,Name,State");
 
             DisplayRowset(jobs);
 
@@ -340,7 +347,7 @@ Options:
             #region List Jobs filtered by JobState
 
                 // here we requeset all canceled jobs via $filter= and Render=
-            jobs = await ReadCollectionWithContinuationAsync(httpClient, baseAddr + "/Jobs", "Render=RestPropRender&$filter=JobState eq Canceled");
+            jobs = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Jobs", "Render=RestPropRender&$filter=JobState eq Canceled");
 
             DisplayRowset(jobs);
 
