@@ -59,38 +59,30 @@ Options:
             #region // Parse command line
             for (int i = 0; i < args.Length; i++)
             {
-                switch (args[i])
+                try
                 {
-                    case "-u":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        credUserName = args[i];
-                        break;
-                    case "-p":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        credPassword = args[i];
-                        break;
-                    case "-c":
-                        if (++i == args.Length)
-                        {
-                            ShowHelp();
-                            return;
-                        }
-                        serverName = args[i];
-                        break;
-                    case "-C":
-                        credentialsAreCachedOnHN = true;
-                        break;
-                    default:
-                        ShowHelp();
-                        return;
+                    switch (args[i])
+                    {
+                        case "-u":
+                            credUserName = args[++i];
+                            break;
+                        case "-p":
+                            credPassword = args[++i];
+                            break;
+                        case "-c":
+                            serverName = args[++i];
+                            break;
+                        case "-C":
+                            credentialsAreCachedOnHN = true;
+                            break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+                catch
+                {
+                    ShowHelp();
+                    return;
                 }
             }
 
