@@ -11,9 +11,16 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 /*
  * This is a sample client for the new REST API of HPC Pack. Get the API spec at:
  * http://download.microsoft.com/download/B/D/B/BDB8782A-FAAF-457D-AF3D-0B157FEEDF4C/New%20Set%20of%20HPC%20Pack%20Scheduler%20REST%20API.pdf
+ * 
+ * The main differences between this new and the old one are:
+ * 1) New API uses NTML/AAD for authentication while the old one uses Basic Auth.
+ * 2) New API accepts/returns JSON/XML body while the old one does XML only.
+ * 3) Some URL changes.
+ * 
+ * For more details, check above document.
  */
 
-namespace RestClient2
+namespace RestClient2016
 {
     class ApiError : Exception
     {

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3405EACE-3FDC-4012-B3F7-898321C6F079}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RestClient2</RootNamespace>
-    <AssemblyName>RestClient2</AssemblyName>
+    <RootNamespace>RestClient2016</RootNamespace>
+    <AssemblyName>RestClient2016</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
