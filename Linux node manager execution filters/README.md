@@ -12,7 +12,7 @@ There are three execution filter scripts as entry point, which read json format 
 
     The json format stdin is like:
 
-    ```json
+    ```
     {
         "m_Item1": {
             "JobId": number,
@@ -43,7 +43,7 @@ There are three execution filter scripts as entry point, which read json format 
 
     The json format stdin is like:
 
-    ```json
+    ```
     {
         "m_Item1": {
             "JobId": number,
@@ -70,7 +70,7 @@ There are three execution filter scripts as entry point, which read json format 
 
     The json format stdin is like:
 
-    ```json
+    ```
     {
         "JobId": number,
         "JobInfo": object,
