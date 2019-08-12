@@ -3,7 +3,7 @@ Sample code of Microsoft HPC Pack 2016 RTM / Update 1 / Update 2
 
 Please choose SDK version (_in VisualStudio or by altering packages.config_) according to your need
 - Version 5.0.5931: When connecting to __Microsoft HPC Pack 2016 RTM__
-- Version 5.1.6088 or later (default): When connecting to __Microsoft HPC Pack 2012__ or __Microsoft HPC Pack 2016 Update 1__ or __Microsoft HPC Pack 2016 Update 2__
+- Version 5.1.6088 or later (default): When connecting to __Microsoft HPC Pack 2012__ or __Microsoft HPC Pack 2016 Update 1__ and later versions
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to
