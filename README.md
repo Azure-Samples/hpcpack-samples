@@ -1,3 +1,17 @@
+---
+page_type: sample
+languages:
+- csharp
+- java
+- powershell
+- python
+- vb
+products:
+- azure
+description: "Sample code of Microsoft HPC Pack 2016 RTM / Update 1 / Update 2"
+urlFragment: hpcpack-samples
+---
+
 # Microsoft HPC Pack 2016 Sample Code
 Sample code of Microsoft HPC Pack 2016 RTM / Update 1 / Update 2
 
