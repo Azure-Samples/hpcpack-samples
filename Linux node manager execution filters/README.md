@@ -6,6 +6,30 @@ Execution filter on Linux compute nodes allows cluster admin to plugin customize
 
 Download the `filters` directory to `/opt/hpcnodemanager/` on each Linux compute node, add execution permission to the scripts and modify them on demand.
 
+### Shortcut
+
+Clusrun can be used to deploy the filters to Linux compute nodes in an HPC Pack cluster.
+
+- Clusrun via HPC Pack Cluster Manager with command:
+
+```bash
+cd /opt/hpcnodemanager && curl https://codeload.github.com/Azure-Samples/hpcpack-samples/tar.gz/master | tar -xz --strip=2 hpcpack-samples-master/'Linux node manager execution filters' && chmod +x filters/*
+```
+
+- Clusrun via CMD with command:
+
+```CMD
+clusrun /nodegroup:LinuxNodes cd /opt/hpcnodemanager ^&^& curl https://codeload.github.com/Azure-Samples/hpcpack-samples/tar.gz/master ^| tar -xz --strip=2 hpcpack-samples-master/'Linux node manager execution filters' ^&^& chmod +x filters/*
+```
+
+- Clusrun via Powershell with command:
+
+```Powershell
+clusrun /nodegroup:LinuxNodes cd /opt/hpcnodemanager `&`& curl https://codeload.github.com/Azure-Samples/hpcpack-samples/tar.gz/master `| tar -xz --strip=2 hpcpack-samples-master/'Linux node manager execution filters' `&`& chmod +x filters/*
+```
+
+### Description
+
 There are three execution filter scripts as entry point, which read json format input from stdin, modify it and write it to stdout.
 
 1. `OnJobTaskStart.sh` is called when a new job (or a task) is dispatched from scheduler to current Linux compute node.
