@@ -20,14 +20,15 @@ namespace HPCSchedulerBasics
         static void ShowHelp()
         {
             string help = @"
-Usage:
-{0} [-c <cluster name>] [-u <user name>] [-d]
+            Usage:
+            {0} [-c <cluster name>] [-u <user name>] [-d]
 
-Options:
--c Provide a HPC cluster name to connect to. The default value is %CCP_SCHEDULER%.
--u Provide a user name to connect as that user.
--d Run in debug mode.
-";
+            Options:
+            -c Provide a HPC cluster name to connect to. The default value is %CCP_SCHEDULER%.
+            -u Provide a user name to connect as that user.
+            -d Run in debug mode.
+            ";
+            // test
             Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
         }
 
