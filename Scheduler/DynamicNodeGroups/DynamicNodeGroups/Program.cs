@@ -8,7 +8,7 @@ using System;
 using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
-using System.Management.Automation;
+using System.Diagnostics;
 
 namespace DynamicNodeGroups
 {
@@ -58,10 +58,12 @@ namespace DynamicNodeGroups
 
                 ISchedulerTask task = job.CreateTask();
                 task.CommandLine = "ver";
+
+                //TaskType.Service means starting new instances endlessly until the task is canceled
                 task.Type = TaskType.Service;
                 job.AddTask(task);
 
-                job.OnTaskState += new EventHandler<TaskStateEventArg>(job_OnTaskState);
+                job.OnTaskState += new EventHandler<TaskStateEventArg>(Job_OnTaskState);
                 Console.WriteLine("Submitting job on NodeGroup1");
                 scheduler.SubmitJob(job, null, null);
                 Console.WriteLine("Job {0} Submitted", job.Id);
@@ -86,34 +88,43 @@ namespace DynamicNodeGroups
                 if (idleCores == 0)
                 {
                     running.Reset();
-                    
+
                     //Changing nodegroups is available through the UI or PowerShell
-                    string powershellScript = String.Format("add-pssnapin microsoft.hpc; " +
+                    string powershellScript = string.Format("add-pssnapin microsoft.hpc; " +
                         "add-hpcgroup -scheduler {0} -name {1} -nodename {2}",
                         clusterName, "NodeGroup1", nodeToMove);
-                    using (PowerShell ps = PowerShell.Create())
-                    {
-                        ps.AddScript(powershellScript, true);
-                        ps.Invoke();
-                    }
+                    Console.WriteLine("Command: {0}", powershellScript);
+                    Console.WriteLine($"Move node {nodeToMove} to NodeGroup1");
+
+                    // requires x64-version build to enable PowerShell support
+                    var processStartInfo = new ProcessStartInfo("powershell.exe", powershellScript);
+                    var process = new Process();
+                    process.StartInfo = processStartInfo;
+                    process.Start();
 
                     running.WaitOne();
                     Console.WriteLine("(Waiting 5 seconds for job to update the scheduler)");
                     Thread.Sleep(5 * 1000);
                     job.Refresh();
-                    int newAllocationCount = job.AllocatedNodes.Count;
 
                     //verify that job has grown
-                    if(newAllocationCount > allocationCount) Console.WriteLine("Job has grown to {0} nodes", newAllocationCount);
+                    int newAllocationCount = job.AllocatedNodes.Count;
+                    Console.WriteLine("newAllocationCount: {0}", newAllocationCount);
+                    Console.WriteLine("allocationCount: {0}", allocationCount);
+                    
+                    if (newAllocationCount > allocationCount)
+                    {
+                        Console.WriteLine("Job has grown to {0} nodes", newAllocationCount);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("There are still idle cores in the nodegroup");
+                    Console.WriteLine("There are still idle cores in the NodeGroup1");
                 }
             }
         }
 
-        static void job_OnTaskState(object sender, TaskStateEventArg e)
+        static void Job_OnTaskState(object sender, TaskStateEventArg e)
         {
             if (e.NewState == TaskState.Running)
             {
