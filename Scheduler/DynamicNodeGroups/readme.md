@@ -15,4 +15,4 @@ Dynamic Node Groups:
 If all the resources are being used up in one nodegroup while nodes in another nodegroup are idle, we can take advantage of dynamic nodegroups to have idle nodes join into a nodegroup and have jobs grow onto it.
 
 The sample begins by submitting a service task (which expands indefinitely) to NodeGroup1 with the intention of taking up all of the group's resources. We can then use the "dynamic node group" feature to help expand the job. Once we see that the job has taken all of the available nodes in the nodegroup, we'll then move an idle node from NodeGroup2 into NodeGroup1 (which can be done via Powershell or through the HPC Cluster Manager). We will then see that the job has grown to the new node without having to modify the job while it is running.
-**Remember to checkout to x64 build in Visual Studio to enable powershell support.**
+**Requires x64 build in Configuration Manager in Visual Studio to enable powershell support.**
