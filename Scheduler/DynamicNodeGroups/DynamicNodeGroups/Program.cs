@@ -9,6 +9,7 @@ using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace DynamicNodeGroups
 {
@@ -17,7 +18,7 @@ namespace DynamicNodeGroups
         static ManualResetEvent running = new ManualResetEvent(false);
 
         //for best results, run this sample code in queued scheduling mode
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
             using (IScheduler scheduler = new Scheduler())
@@ -104,7 +105,7 @@ namespace DynamicNodeGroups
 
                     running.WaitOne();
                     Console.WriteLine("(Waiting 5 seconds for job to update the scheduler)");
-                    Thread.Sleep(5 * 1000);
+                    await Task.Delay(5 * 1000);
                     job.Refresh();
 
                     //verify that job has grown
