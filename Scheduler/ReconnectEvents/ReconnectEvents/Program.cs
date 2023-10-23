@@ -6,8 +6,8 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Hpc.Scheduler;
-using Microsoft.Hpc.Scheduler.Properties;
 
 namespace ReconnectEvents
 {
@@ -15,40 +15,44 @@ namespace ReconnectEvents
     {
         //event handler we'll use to monitor the connection status
         static ManualResetEvent connected = new ManualResetEvent(true);
-        static IScheduler scheduler;
-
-        static void Main(string[] args)
+        
+        static async Task Main(string[] args)
         {
-
             string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
-            IStringCollection headnode = new StringCollection();
-            headnode.Add(clusterName);
 
-            //create scheduler object
-            scheduler = new Scheduler();
-            //connect to the cluster
-            scheduler.Connect(clusterName);
-            //create the event handler
-            //the event handler must be created after connection is made to the scheduler
-            scheduler.OnSchedulerReconnect += new EventHandler<ConnectionEventArg>(scheduler_OnSchedulerReconnect);
-
-            Console.WriteLine("Submitting a job every 2 seconds");
-            Console.WriteLine("On the headnode, forcibly end the connection by ending procress HpcSchedulerStateful.exe which is consuming biggest amount of memory");
-            Console.WriteLine("Press CTRL+C to exit");
-            Console.WriteLine();
-
-            try
+            using (IScheduler scheduler = new Scheduler())
             {
-                while (true) submitJobs();
+                scheduler.Connect(clusterName);
+                //create the event handler
+                //the event handler must be created after connection is made to the scheduler
+                scheduler.OnSchedulerReconnect += new EventHandler<ConnectionEventArg>(Scheduler_OnSchedulerReconnect);
+
+                Console.WriteLine("Submitting a job every 2 seconds");
+                Console.WriteLine("End the connection by ending process HpcScheduler.exe on the head node");
+                Console.WriteLine("In Task Manageer -> More Details -> Details tab -> find HpcScheduler.exe -> End Task");
+                Console.WriteLine("HpcScheduler.exe will restart automatically after a while");
+                Console.WriteLine("Press CTRL+C to exit");
+                Console.WriteLine();
+
+                try
+                {
+                    while (true)
+                    {
+                        await SubmitJobs(scheduler);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Unexpected exception occurred in SubmitJobs. Message: {e.Message}");
+                }   
+                finally
+                {
+                    scheduler.Dispose();
+                }
             }
-            finally
-            {
-                scheduler.Dispose();
-            }
-            
         }
 
-        static void scheduler_OnSchedulerReconnect(object sender, ConnectionEventArg e)
+        static void Scheduler_OnSchedulerReconnect(object sender, ConnectionEventArg e)
         {
             //check for Disconnect event
             if (e.Code == ConnectionEventCode.StoreDisconnect)
@@ -65,10 +69,10 @@ namespace ReconnectEvents
             }
         }
 
-        static bool submitJobs()
+        static async Task SubmitJobs(IScheduler scheduler)
         {
-            //wait for a maximum of one minute for scheduler connect before exiting
-            if (connected.WaitOne(1*1000)) //timesout in one second
+            //wait for a maximum of 1 second for scheduler connect before exiting
+            if (connected.WaitOne(1 * 1000))
             {
                 //create a job equivalent to "job submit echo Hello World" 
                 ISchedulerJob job = scheduler.CreateJob();
@@ -80,11 +84,9 @@ namespace ReconnectEvents
                 job.Refresh();
                 Console.WriteLine("Job {0} was submitted", job.Id);
 
-                Thread.Sleep(2 * 1000); //pause for 2 seconds
-                return true;
+                //pause for 2 seconds
+                await Task.Delay(2 * 1000);
             }
-            return false;
         }
-
     }
 }
