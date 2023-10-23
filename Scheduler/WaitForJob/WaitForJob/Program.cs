@@ -9,7 +9,7 @@ using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 
-namespace ConsoleApplication3
+namespace WaitForjob
 {
     class Program
     {
