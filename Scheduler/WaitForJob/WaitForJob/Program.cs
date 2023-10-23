@@ -71,6 +71,10 @@ namespace WaitForjob
                     checkJobState.WaitOne();
                 } while (true);
             }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unexpected exception occurred. Message: {e.Message}");
+            }
             finally
             {
                 // must unregester handlers using the same job and scheduler objects that were used to register them above
@@ -90,10 +94,14 @@ namespace WaitForjob
 
                 ISchedulerJob job = scheduler.CreateJob();
                 ISchedulerTask task = job.CreateTask();
-                task.CommandLine = "ping localhost -n 10";
+                task.CommandLine = "ping localhost -n 20";
                 job.AddTask(task);
                 scheduler.SubmitJob(job, null, null);
 
+                Console.WriteLine("End the connection by ending process HpcScheduler.exe on the head node");
+                Console.WriteLine("In Task Manageer -> More Details -> Details tab -> find HpcScheduler.exe -> End Task");
+                Console.WriteLine("HpcScheduler.exe will restart automatically after a while");
+                Console.WriteLine();
                 WaitForJob(scheduler, job);
             }
         }
