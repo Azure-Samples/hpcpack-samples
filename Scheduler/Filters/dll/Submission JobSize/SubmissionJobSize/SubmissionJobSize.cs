@@ -5,22 +5,17 @@
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Reflection;
-
-
 using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
-
 
 namespace SubmissionJobSize
 {
-    public class JobSizeFilter: ISubmissionFilter, IFilterLifespan  // note: IFilterLifespan is optional
+    public class JobSizeFilter : ISubmissionFilter, IFilterLifespan  // note: IFilterLifespan is optional
     {
         public TextWriter logFile = null;
         private int someInternalState = 0;
-
 
         public SubmissionFilterResponse FilterSubmission(Stream jobXmlIn, out Stream jobXmlModified)
         {
@@ -31,11 +26,11 @@ namespace SubmissionJobSize
 
             jobXmlModified = null;
 
-            if ((retval = setupLogFile()) != 0)
+            if ((retval = SetupLogFile()) != 0)
             {
                 return retval;
             }
-            
+
             // Load the job file as an XmlDocument.
             XmlDocument doc = new XmlDocument();
             try
@@ -46,12 +41,7 @@ namespace SubmissionJobSize
                 nsMgr.AddNamespace("hpc", "http://schemas.microsoft.com/HPCS2008R2/scheduler/");
 
                 // Find the job node in the XML document.
-                XmlNode job = doc.SelectSingleNode("/hpc:Job", nsMgr);
-
-                if (job == null)
-                {
-                    throw new Exception("No job in the xml file");
-                }
+                XmlNode job = doc.SelectSingleNode("/hpc:Job", nsMgr) ?? throw new Exception("No job in the xml file");
 
                 // Find the UnitType attribute for the job.
                 XmlAttributeCollection attrCol = job.Attributes;
@@ -126,7 +116,7 @@ namespace SubmissionJobSize
                         doc.Save(jobXmlModified);
 
                         // Return a value of 1 to indicate that the values were changed.
-                        retval =  SubmissionFilterResponse.SuccessJobChanged;
+                        retval = SubmissionFilterResponse.SuccessJobChanged;
                     }
                 }
             }
@@ -152,18 +142,19 @@ namespace SubmissionJobSize
             return retval;
         }
 
-        private SubmissionFilterResponse setupLogFile()
+        private SubmissionFilterResponse SetupLogFile()
         {
             try
             {
                 string assemblyPathInclusive = Assembly.GetExecutingAssembly().Location;
                 string assemblyPath = Path.GetDirectoryName(assemblyPathInclusive);
-                String logFileName = Path.Combine(assemblyPath, "SubmissionFilter.log");
-                logFile = new StreamWriter(logFileName,true);
-                return  SubmissionFilterResponse.SuccessNoJobChange;
+                string logFileName = Path.Combine(assemblyPath, "SubmissionFilter.log");
+                logFile = new StreamWriter(logFileName, true);
+                return SubmissionFilterResponse.SuccessNoJobChange;
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Error creating log file: {0}", ex.Message);
                 return SubmissionFilterResponse.FailJob;
             }
         }
