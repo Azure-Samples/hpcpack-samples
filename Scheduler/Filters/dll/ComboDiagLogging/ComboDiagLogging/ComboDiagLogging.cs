@@ -4,13 +4,9 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Xml;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
-
 using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
 
 // This sample code is intended as a diagnostic aid and provides two main features:
@@ -27,7 +23,7 @@ using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
 
 namespace CombinedDiagnosticFilterWithEventLogging
 {
-    public class ActvSubCombo: ISubmissionFilter, IActivationFilter, IFilterLifespan
+    public class ActvSubCombo : ISubmissionFilter, IActivationFilter, IFilterLifespan
     {
         private EventLog _log = new EventLog();
         public TextWriter logFile = null;
@@ -72,9 +68,6 @@ namespace CombinedDiagnosticFilterWithEventLogging
         public void OnFilterLoad()
         {
             LogEventMsg("OnFilterLoad");
-
-            string foo = _location;
-
             _onFilterLoadCalls++;
         }
 
@@ -92,7 +85,7 @@ namespace CombinedDiagnosticFilterWithEventLogging
             ActivationFilterResponse retVal = ActivationFilterResponse.StartJob;
 
             _filterActivationCalls++;
-            
+
             return retVal;
         }
 
