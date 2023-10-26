@@ -5,14 +5,8 @@
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using System.IO;
-using System.Configuration;
-
-
 
 namespace SubmissionJobSize
 {
@@ -28,7 +22,7 @@ namespace SubmissionJobSize
         {
             // Create the Log file for the filter.
             int retval;
-            if ((retval = setupLogFile()) != 0)
+            if ((retval = SetupLogFile()) != 0)
             {
                 return retval;
             }
@@ -42,7 +36,7 @@ namespace SubmissionJobSize
                 logFile.WriteLine("Takes exactly one parameter, ie the name of the job xml file");
             }
 
-            String fileName = args[0];
+            string fileName = args[0];
 
             // Load the job file as an XmlDocument.
             XmlDocument doc = new XmlDocument();
@@ -54,12 +48,7 @@ namespace SubmissionJobSize
                 nsMgr.AddNamespace("hpc", "http://schemas.microsoft.com/HPCS2008R2/scheduler/");
 
                 // Find the job node in the XML document.
-                XmlNode job = doc.SelectSingleNode("/hpc:Job", nsMgr);
-
-                if (job == null)
-                {
-                    throw new Exception("No job in the xml file");
-                }
+                XmlNode job = doc.SelectSingleNode("/hpc:Job", nsMgr) ?? throw new Exception("No job in the xml file");
 
                 // Find the UnitType attribute for the job.
                 XmlAttributeCollection attrCol = job.Attributes;
@@ -90,7 +79,7 @@ namespace SubmissionJobSize
 
                     if (attrib != null)
                     {
-                        numMaxUnits = Int32.Parse(attrib.Value);
+                        numMaxUnits = int.Parse(attrib.Value);
                     }
 
                     // If the maximum number of units specified is more than 1, then change the job's properties.
@@ -158,11 +147,11 @@ namespace SubmissionJobSize
             return retval;
         }
 
-        private static int setupLogFile()
+        private static int SetupLogFile()
         {
             try
             {
-                String logFileName = "SubmissionFilter.log";
+                string logFileName = "SubmissionFilter.log";
                 logFile = new StreamWriter(logFileName, true);
                 return 0;
             }
@@ -171,6 +160,5 @@ namespace SubmissionJobSize
                 return FailureOpeningLogFile;
             }
         }
-
     }
 }
