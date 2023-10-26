@@ -58,9 +58,9 @@ Options:
 
         static async Task Main(string[] args)
         {
-            string credUserName = "hpcadmin";
-            string credPassword = "!!123abcdefg";
-            string serverName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string credUserName = null;
+            string credPassword = null;
+            string serverName = null;
 
             bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
 
