@@ -6,13 +6,7 @@
 
 using System;
 using System.IO;
-using System.Threading;
-using System.Collections;
-using System.Text;
-using System.ComponentModel;
 using System.Xml;
-using System.Xml.XPath;
-using System.Xml.Serialization;
 using Microsoft.Hpc.Scheduler;
 
 // This sample code demonstrates using the HoldUntil property and method within the
@@ -39,7 +33,7 @@ using Microsoft.Hpc.Scheduler;
 // Note:  If an activation filter takes too much time, checked by ActivationFilterTimeout parameter, the
 // job will not be started.
 
-namespace ActivationFilterSample
+namespace ActivationHoldUntil
 {
     class MoveJobsToOffHours
     {
@@ -47,7 +41,7 @@ namespace ActivationFilterSample
         // only in one spot and used in Help() & Main()
         private static string xmlNameSpace = @"http://schemas.microsoft.com/HPCS2008R2/scheduler/";
 
-        private static string[] PeakUsers = { "DomainName\\UserName1", "DomainName\\UserName42" };
+        private static string[] peakUsers = { "DomainName\\UserName1", "DomainName\\UserName42" };
 
         private enum AFReturnValue
         {
@@ -77,15 +71,18 @@ namespace ActivationFilterSample
         static int Main(string[] args)
         {
             string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
-            
-            if (setupLogFile() != 0) {
-                return (int) AFReturnValue.FilterFailure;
+
+            if (SetupLogFile() != 0)
+            {
+                return (int)AFReturnValue.FilterFailure;
             }
 
             int retval = (int)AFReturnValue.FilterFailure;
-            try {
+            try
+            {
                 // If the job is submitted outside peak business hours, no change is necessary
-                if (DuringOffHours()) {
+                if (DuringOffHours())
+                {
                     logFile.WriteLine("AF: During Off Peak Hours, job starting");
                     return (int)AFReturnValue.StartJob;
                 }
@@ -96,16 +93,18 @@ namespace ActivationFilterSample
 
                 // Check that there is only one argument.  If more than 1 argument exists,
                 // put a warning in the log file, but try to process it anyway
-                if (args.Length != 1) {
+                if (args.Length != 1)
+                {
                     logFile.WriteLine("Only 1 parameter expected containing the name of the job xml file");
                     logFile.WriteLine("Received {0} parameters", args.Length);
                     // If no parameters exist, cannot parse XML file
-                    if (args.Length == 0) {
+                    if (args.Length == 0)
+                    {
                         return (int)AFReturnValue.FilterFailure;
                     }
                 }
 
-                String fileName = args[0];
+                string fileName = args[0];
 
                 // Load the job file as an XmlDocument.
                 XmlDocument doc = new XmlDocument();
@@ -115,11 +114,7 @@ namespace ActivationFilterSample
                 nsMgr.AddNamespace("hpc", xmlNameSpace);
 
                 // Find the job node in the XML document.
-                XmlNode jobXML = doc.SelectSingleNode("/hpc:Job", nsMgr);
-
-                if (jobXML == null) {
-                    throw new Exception("No job in the xml file");
-                }
+                XmlNode jobXML = doc.SelectSingleNode("/hpc:Job", nsMgr) ?? throw new Exception("No job in the xml file");
 
                 // Find the User attribute for the job.
                 XmlAttributeCollection attrCol = jobXML.Attributes;
@@ -127,12 +122,14 @@ namespace ActivationFilterSample
                 string user = userAttr.Value;
 
                 // If user does not have permission to run jobs during peak hours, adjust HoldUntil if needed
-                if (!PeakHoursUser(user)) {
+                if (!PeakHoursUser(user))
+                {
                     string jobIdString = attrCol["Id"].Value;
-                    int jobId;
-                    Int32.TryParse(jobIdString, out jobId);
-                    if (jobId != 0) {
-                        using (IScheduler scheduler = new Scheduler()) {
+                    int.TryParse(jobIdString, out int jobId);
+                    if (jobId != 0)
+                    {
+                        using (IScheduler scheduler = new Scheduler())
+                        {
                             scheduler.Connect(clusterName);
                             ISchedulerJob job = scheduler.OpenJob(jobId);
 
@@ -141,33 +138,46 @@ namespace ActivationFilterSample
                             // If the job is not already set to delay until off peak hours, set it
                             // This property should be null, but could be non-null if some other
                             // thread has set it after scheduling called the activation filter
-                            if ((job.HoldUntil == null) || (job.HoldUntil < peakEnd)) {
+                            if ((job.HoldUntil == null) || (job.HoldUntil < peakEnd))
+                            {
                                 job.SetHoldUntil(peakEnd);
                                 job.Commit();
                                 logFile.WriteLine("Delay job {0} until off peak hours", jobId);
-                            } else {
+                            }
+                            else
+                            {
                                 logFile.WriteLine("Job {0} already set to {1}", jobId, job.HoldUntil);
                             }
                             scheduler.Close();
                         } // using scheduler
-                    } else {
+                    }
+                    else
+                    {
                         logFile.WriteLine("jobId == 0, delaying job by default duration");
                     }
 
                     retval = (int)AFReturnValue.HoldJobUntil;
-                } else {
+                }
+                else
+                {
                     logFile.WriteLine("Job to run during peak hours");
                     retval = (int)AFReturnValue.StartJob;
                 }
 
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 logFile.WriteLine("Error Loading the XmlFile");
                 logFile.WriteLine(e.ToString());
                 retval = (int)AFReturnValue.FilterFailure;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 logFile.WriteLine(e.ToString());
                 retval = (int)AFReturnValue.FilterFailure;
-            } finally {
+            }
+            finally
+            {
                 logFile.Close();
             }
 
@@ -177,13 +187,16 @@ namespace ActivationFilterSample
         // Setup the log file
         // Return 0 = Success
         //       -1 = Failure
-        private static int setupLogFile()
+        private static int SetupLogFile()
         {
             int retval = 0;
-            try {
-                String logFileName = "SubmissionFilter.log";
+            try
+            {
+                string logFileName = "SubmissionFilter.log";
                 logFile = new StreamWriter(logFileName, true);
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 retval = -1;
             }
             return retval;
@@ -201,15 +214,18 @@ namespace ActivationFilterSample
             DateTime now = DateTime.Now;
 
             // Before morning or after evening
-            if (now.Hour < (starthours - startbuffer) || (now.Hour >= endhours)) {
+            if (now.Hour < (starthours - startbuffer) || (now.Hour >= endhours))
+            {
                 return true;
             }
             // If this is during the weekend, all hours are off peak
-            if ((now.DayOfWeek == DayOfWeek.Saturday) || (now.DayOfWeek == DayOfWeek.Sunday)) {
+            if ((now.DayOfWeek == DayOfWeek.Saturday) || (now.DayOfWeek == DayOfWeek.Sunday))
+            {
                 return true;
             }
             // Consider holidays
-            if (IsHoliday(now)) {
+            if (IsHoliday(now))
+            {
                 return true;
             }
             return false;
@@ -227,7 +243,8 @@ namespace ActivationFilterSample
         {
             bool Holiday = false;
             if ((date.DayOfYear == 1) ||  // Currently only celebrating New Years Day
-                ((date.DayOfYear == 60) && (date.Month == 2))) { // and February 29th
+                ((date.DayOfYear == 60) && (date.Month == 2)))
+            { // and February 29th
                 Holiday = true;
             }
             return Holiday;
@@ -243,8 +260,10 @@ namespace ActivationFilterSample
         /// </returns>
         private static bool PeakHoursUser(string user)
         {
-            foreach (string peakUser in PeakUsers) {
-                if (peakUser == user) {
+            foreach (string peakUser in peakUsers)
+            {
+                if (peakUser == user)
+                {
                     return true;  // User found
                 }
             }
