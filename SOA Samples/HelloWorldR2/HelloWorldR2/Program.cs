@@ -7,7 +7,7 @@
 
 using System;
 // This namespace is defined in the HPC Server 2016 SDK
-// which includes the HPC SOA Session API.   
+// which includes the HPC SOA Session API.
 using Microsoft.Hpc.Scheduler.Session;
 // This namespace is defined in the "EchoService" service reference
 using HelloWorldR2.EchoService;
