@@ -17,8 +17,8 @@ namespace SubmitJobFast
                 scheduler.Connect(clusterName);
 
                 // SubmitJobById / SubmitJob call will return when the job reaches the speficied state
-                TestSubmitJobById(scheduler, JobState.Queued | JobState.Configuring);
-                TestSubmitJob(scheduler, JobState.Queued | JobState.Configuring);
+                TestSubmitJobById(scheduler, JobState.Configuring | JobState.Submitted);
+                TestSubmitJob(scheduler, JobState.Configuring | JobState.Submitted);
 
                 scheduler.Close();
             }

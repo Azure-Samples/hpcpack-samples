@@ -26,7 +26,7 @@ namespace SubmitTaskFast
 
                 // SubmitTask / SubmitTaskById must be called after a job is submitted
                 // SubmitTask / SubmitTaskById call will return when the task reaches the speficied state
-                TestSubmitTask(job, TaskState.Configuring | TaskState.Queued);
+                TestSubmitTask(job, TaskState.Configuring | TaskState.Submitted);
 
                 job = scheduler.CreateJob();
                 job.Name = "TestSubmitTaskById";
@@ -36,7 +36,7 @@ namespace SubmitTaskFast
                 job.AddTask(task);
                 scheduler.SubmitJob(job, null, null);
 
-                TestSubmitTaskById(job, TaskState.Configuring | TaskState.Queued);
+                TestSubmitTaskById(job, TaskState.Configuring | TaskState.Submitted);
 
                 scheduler.Close();
             }
