@@ -127,14 +127,14 @@ namespace CSharpClient2016
         public static async Task Main(string[] args)
         {
             // It's enough to provide username, password, serverName.
-            string username = "hpcadmin";
-            string password = "!!123abcdefg";
+            string username = null;
+            string password = null;
             string tenentid = null;
             string clientid = null;
             string resourceid = null;
             string redirectUri = "http://hpcclient";
             bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
-            string serverName = "tianyiclus";
+            string serverName = null;
             bool debug = false;
 
             try
