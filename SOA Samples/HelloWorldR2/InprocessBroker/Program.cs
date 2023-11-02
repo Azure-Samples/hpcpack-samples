@@ -6,10 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ServiceModel;
 using Microsoft.Hpc.Scheduler.Session;
 using InprocessBroker.EchoService; 
 
@@ -25,7 +21,6 @@ namespace InprocessBroker
             int numOfRequests = 10; 
             
             SessionStartInfo sessionStartInfo = new SessionStartInfo(headnode, serviceName);
-
             // UseInprocessBroker indicates what kind of broker session is going to use. True means inprocess broker will be adopted
             // while false means a dedicated broker node will be used by the session.
             Console.WriteLine("Enable UseInprocessBroker...");
@@ -51,7 +46,7 @@ namespace InprocessBroker
                     for (int i = 0; i < numOfRequests; i++)
                     {
                         EchoRequest request = new EchoRequest("Hello World " + i.ToString());
-                        client.SendRequest<EchoRequest>(request, i);
+                        client.SendRequest(request, i);
                     }
 
                     Console.WriteLine("Calling EndRequests to notify the end of sending requests... ");

@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
@@ -26,9 +25,12 @@ namespace HelloWorldR2Linq
             const string headnode = "[headnode]";
             const string serviceName = "EchoService";
             const int numRequests = 12;
-            SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
 
-            Console.Write("Creating a session for EchoService...");
+            SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
+            // If the cluster is non-domain joined, add the following statement
+            // info.Secure = false;
+
+            Console.WriteLine("Creating a session for EchoService...");
 
             // Create a durable session 
             // Request and response messages in a durable session are persisted so that
@@ -38,6 +40,8 @@ namespace HelloWorldR2Linq
             {
                 Console.WriteLine("done session id = {0}", session.Id);
                 NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+                // If the cluster is non-domain joined, use the following statement
+                // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
 
                 // Create a BrokerClient proxy
                 // This proxy is able to map One-Way, Duplex message exchange patterns 
@@ -46,13 +50,13 @@ namespace HelloWorldR2Linq
                 // FireNRecollect project for details
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(session, binding))
                 {
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine($"Sending {numRequests} requests...");
                     for (int i = 0; i < numRequests; i++)
                     {
                         // EchoRequest are created as you add Service Reference
                         // EchoService to the project
-                        EchoRequest request = new EchoRequest("hello world!"+i);
-                        client.SendRequest<EchoRequest>(request, i);
+                        EchoRequest request = new EchoRequest("hello world!" + i);
+                        client.SendRequest(request, i);
                     }
 
                     // Flush the message.  After this call, the runtime system
@@ -67,7 +71,6 @@ namespace HelloWorldR2Linq
                     // GetResponses from the runtime system
                     // EchoResponse class is created as you add Service Reference "EchoService"
                     // to the project
-
                     try
                     {
                         IEnumerable<string> query = from s in client.GetResponses<EchoResponse>()
@@ -79,7 +82,6 @@ namespace HelloWorldR2Linq
                         {
                             Console.WriteLine("\tReceived response for request {0}", k);
                         }
-
                     }
                     catch (Exception ex)
                     {

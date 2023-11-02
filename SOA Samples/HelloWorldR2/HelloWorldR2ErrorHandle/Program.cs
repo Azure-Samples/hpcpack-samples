@@ -6,9 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading ;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
@@ -28,13 +25,13 @@ namespace HelloWorldR2ErrorHandle
             const string serviceName = "EchoService";
             const int numRequests = 12;
             SessionStartInfo startInfo = new SessionStartInfo(headnode, serviceName);
+            // If the cluster is non-domain joined, add the following statement
+            // startInfo.Secure = false;
+
             startInfo.BrokerSettings.SessionIdleTimeout = 15 * 60 * 1000;
             startInfo.BrokerSettings.ClientIdleTimeout = 15 * 60 * 1000;
 
-            Console.Write("Creating a session for EchoService...");
-
-            // Create a durable session 
-            int sessionId = 0;
+            Console.WriteLine("Creating a session for EchoService...");
             DurableSession session = null;
             bool successFlag = false;
             int retryCount = 0;
@@ -91,7 +88,8 @@ namespace HelloWorldR2ErrorHandle
                 return;
             }
 
-            sessionId = session.Id;
+            // Create a durable session 
+            int sessionId = session.Id;
             Console.WriteLine("Done session id = {0}", sessionId);
 
 
@@ -105,21 +103,19 @@ namespace HelloWorldR2ErrorHandle
             {
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(session))
                 {
-
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine("Sending {0} requests...", numRequests);
 
                     try
                     {
                         for (int i = 0; i < numRequests; i++)
                         {
                             //client.SendRequest<EchoFaultRequest>(new EchoFaultRequest("dividebyzeroexception"), i, sendTimeoutMs);
-                            client.SendRequest<EchoDelayRequest>(new EchoDelayRequest (5000), i, sendTimeoutMs); 
+                            client.SendRequest(new EchoDelayRequest(5000), i, sendTimeoutMs);
                         }
 
                         client.EndRequests();
                         successFlag = true;
                         Console.WriteLine("done");
-
                     }
                     
                     catch (TimeoutException e)
@@ -173,9 +169,7 @@ namespace HelloWorldR2ErrorHandle
                         {
                             Console.WriteLine("Failed to purge the client after send request failure {0}", e.ToString() ); 
                         }
-
                     }
-
                 }
 
                 if (!successFlag)
@@ -197,11 +191,8 @@ namespace HelloWorldR2ErrorHandle
             //attach the session
             SessionAttachInfo attachInfo = new SessionAttachInfo(headnode, sessionId);
 
-
             successFlag = false;
             retryCount = 0;
-            const int attachTimeoutMs = 15000;
-            
             while (!successFlag && retryCount++ < retryCountMax)
             {
                 try
@@ -239,7 +230,6 @@ namespace HelloWorldR2ErrorHandle
                     Console.WriteLine("=== Sleep {0} ms to retry. Retry count left {1}. ===", retryIntervalMs, retryCountMax - retryCount);
                     Thread.Sleep(retryIntervalMs);
                 }
-
             }
 
             if (!successFlag)
@@ -248,18 +238,17 @@ namespace HelloWorldR2ErrorHandle
                 return;
             }
 
-
-
             successFlag = false;
             retryCount = 0;
             const int getTimeoutMs = 30000;
             const int clientCloseTimeoutMs= 15000;
+
             Console.WriteLine("Retrieving responses...");
+
             while (!successFlag && retryCount++ < retryCountMax)
             {
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(session))
                 {
-
                     // GetResponses from the runtime system
                     // EchoResponse class is created as you add Service Reference "EchoService" to the project
                     try
@@ -292,9 +281,7 @@ namespace HelloWorldR2ErrorHandle
 
                         successFlag = true;
                         Console.WriteLine("Done retrieving {0} responses", numRequests);
-
                     }
-                    
                     catch (TimeoutException e)
                     {
                         // Timeout exceptions
@@ -307,7 +294,6 @@ namespace HelloWorldR2ErrorHandle
                     }
                     catch (SessionException e)
                     {
-                
                         Console.WriteLine("SessionException {0}, error code 0x{1:x}", e.ToString(), e.ErrorCode);
                 
                         if (SOAFaultCode.Broker_BrokerUnavailable == e.ErrorCode)
@@ -327,7 +313,6 @@ namespace HelloWorldR2ErrorHandle
                             retryCount = retryCountMax;
                             continue;
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -343,7 +328,6 @@ namespace HelloWorldR2ErrorHandle
                     {
                         Console.WriteLine("Exception", e.ToString());
                     }
-                    
                 }
 
                 if (!successFlag)
@@ -351,7 +335,6 @@ namespace HelloWorldR2ErrorHandle
                     Console.WriteLine("=== Sleep {0} ms to retry. Retry count left {1}. ===", retryIntervalMs, retryCountMax - retryCount);
                     Thread.Sleep(retryIntervalMs);
                 }
-
             }
 
             //explict close the session to free the resource
@@ -359,6 +342,7 @@ namespace HelloWorldR2ErrorHandle
             retryCount = 0;
 
             Console.WriteLine("Close the session...");
+
             while (!successFlag && retryCount++ < retryCountMax)
             {
                 try

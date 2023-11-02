@@ -6,9 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
@@ -27,26 +24,32 @@ namespace HelloWorldR2SessionPool
             const string serviceName = "EchoService";
             const int numRequests = 12;
             SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
+
+            // If the cluster is non-domain joined, add the following statement
+            // info.Secure = false;
+
             //session in the session pool should be a shared session
             info.ShareSession = true;
             info.UseSessionPool = true;
-            Console.Write("Creating a session using session pool for EchoService...");
+            Console.WriteLine("Creating a session using session pool for EchoService...");
 
             using (DurableSession session = DurableSession.CreateSession(info))
             {
                 Console.WriteLine("done session id = {0}", session.Id);
                 NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+                // If the cluster is non-domain joined, use the following statement
+                // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
 
                 //to make sure the client id is unique among the sessions
                 string clientId = Guid.NewGuid().ToString();
                 
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(clientId, session, binding))
                 {
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine("Sending {0} requests...", numRequests);
                     for (int i = 0; i < numRequests; i++)
                     {
                         EchoRequest request = new EchoRequest("hello world!");
-                        client.SendRequest<EchoRequest>(request, i);
+                        client.SendRequest(request, i);
                     }
 
                     client.EndRequests();

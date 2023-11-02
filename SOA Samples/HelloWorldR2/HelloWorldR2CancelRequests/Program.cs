@@ -6,19 +6,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
-// This namespace is defined in the HPC Server 2016 SDK
-using Microsoft.Hpc.Scheduler.Properties;
 // This namespace is defined in the "EchoService" service reference
 using HelloWorldR2CancelRequests.EchoService;
 using System.ServiceModel;
 using System.Threading;
-using System.Configuration;
 
 
 namespace HelloWorldR2CancelRequests
@@ -27,45 +21,49 @@ namespace HelloWorldR2CancelRequests
     {
         static void Main(string[] args)
         {
-            //change the headnode name  here
+            // change the headnode name here
             const string headnode = "[headnode]";
             const string serviceName = "EchoService";
             const int numRequests = 100;
 
             SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
+            // If the cluster is non-domain joined, add the following statement
+            // info.Secure = false;
 
-            //the cluster need to have a minimum 2 cores to run this sample code
+            // The cluster needs to have a minimum of 2 cores to run this sample code
             info.SessionResourceUnitType = SessionUnitType.Core;
             info.MaximumUnits = 2;
             info.MinimumUnits = 2;
 
-            Console.Write("Creating a session for EchoService...");
+            Console.WriteLine("Creating a session for EchoService...");
 
             using (DurableSession session = DurableSession.CreateSession(info))
             {
                 Console.WriteLine("done session id = {0}", session.Id);
                 NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+                // If the cluster is non-domain joined, use the following statement
+                // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
+
                 int sessionId = session.Id;
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(session, binding))
                 {
-
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine("Sending {0} requests...", numRequests);
 
                     for (int i = 0; i < numRequests; i++)
                     {
                         EchoOnExitRequest request = new EchoOnExitRequest(new TimeSpan(0, 0, 1));
-                        client.SendRequest<EchoOnExitRequest>(request, i);
+                        client.SendRequest(request, i);
                     }
 
                     client.EndRequests();
                     Console.WriteLine("done");
 
-                    //separate a work thread to purge the client when the requests are processing
+                    // separate a work thread to purge the client when the requests are processing
                     ThreadPool.QueueUserWorkItem(delegate
                     {
 
-                        //wait 30 seconds to try cancel service tasks.
-                        Console.Write("Will cancel the requests in 30 seconds.");
+                        // wait 30 seconds to try cancel service tasks.
+                        Console.WriteLine("Will cancel the requests in 30 seconds.");
                         Thread.Sleep(30 * 1000);
                         try
                         {

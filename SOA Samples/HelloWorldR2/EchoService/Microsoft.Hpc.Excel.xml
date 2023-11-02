@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+	<assembly>
+		<name>Microsoft.Hpc.Excel</name>
+	</assembly>
+	<members>
+		<member name="N:Microsoft.Hpc.Excel">
+			<summary>Provides classes for interacting with Excel workbooks and performing calculations for those workbooks on an HPC cluster.</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelClient">
+			<summary>Represents an engine that implements the partition, calculate, and merge model that Microsoft HPC Pack 2019 Services for Excel uses to run calculations in a workbook in parallel on an HPC cluster. The workbook must implement the callback macro framework.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelClient"></see> class.</summary>
+		</member>
+		<member name="E:Microsoft.Hpc.Excel.ExcelClient.ErrorHandler">
+			<summary>An event that is raised when the response handler receives errors from the HPC cluster.</summary>
+		</member>
+		<member name="F:Microsoft.Hpc.Excel.ExcelClient.Version">
+			<summary>Represents the version of the Excel client.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.BeginRun(System.Boolean,System.AsyncCallback,System.Object)">
+			<summary>Starts a calculation asynchronously for the Excel workbook using the partition, calculate, and merge model that Microsoft HPC Pack 2019 Services for Excel uses to run calculations. The calculation runs on the HPC cluster with the head node that you specified when you called the <see cref="Overload:Microsoft.Hpc.Excel.ExcelClient.OpenSession"></see> method, unless you specify that the calculation should run on the local computer.</summary>
+			<returns>An <see cref="T:System.IAsyncResult"></see> interface to an object that contains information about the status of the asynchronous calculation.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.Cancel">
+			<summary>Cancels any currently running Excel calculations without closing the SOA session.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.CloseSession">
+			<summary>Closes the session that you opened by calling the <see cref="Overload:Microsoft.Hpc.Excel.ExcelClient.OpenSession"></see> method subject to a default timeout period, and closes all instances of Excel that are running on the compute nodes.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.CloseSession(System.Int32)">
+			<summary>Closes the session that you opened by calling the <see cref="Overload:Microsoft.Hpc.Excel.ExcelClient.OpenSession"></see> method subject to the specified timeout period, and closes all instances of Excel that are running on the compute nodes.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.Dispose">
+			<summary>Releases all of the resources that the object allocated.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.EndRun(System.IAsyncResult)">
+			<summary>Ends a asynchronous calculation from an Excel workbook on an HPC cluster that you began by calling the <see cref="M:Microsoft.Hpc.Excel.ExcelClient.BeginRun(System.Boolean,System.AsyncCallback,System.Object)"></see> method.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.Initialize(System.String)">
+			<summary>Initializes the Excel SOA client by creating a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class to interact with the Excel workbook located at the specified path.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.Initialize(Microsoft.Office.Interop.Excel.Workbook)">
+			<summary>Initializes the Excel SOA client by creating a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class to interact with the Excel workbook that is represented by the specified <see cref="T:Microsoft.Office.Interop.Excel.Workbook"></see> object.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.OpenSession(Microsoft.Hpc.Scheduler.Session.SessionStartInfo,System.String)">
+			<summary>Starts a new SOA session using the settings in the specified <see cref="T:Microsoft.Hpc.Scheduler.Session.SessionStartInfo"></see> object to perform calculations from the specified Excel workbook on an HPC cluster.</summary>
+			<returns>An <see cref="T:System.Int32"></see> that specifies the identifier of the SOA session that the method created.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.OpenSession(System.String,System.Int32,System.Int32,Microsoft.Hpc.Scheduler.Session.SessionUnitType,System.String)">
+			<summary>Starts a new SOA session using the specified resource settings to perform calculations from the specified Excel workbook on the HPC cluster with the specified head node.</summary>
+			<returns>An <see cref="T:System.Int32"></see> that specifies the identifier of the SOA session that the method created.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClient.Run(System.Boolean)">
+			<summary>Starts the calculation for the Excel workbook using the partition, calculate, and merge model that Microsoft HPC Pack 2019 Services for Excel uses to run calculations. The calculation runs on the HPC cluster with the head node that you specified when you called the <see cref="Overload:Microsoft.Hpc.Excel.ExcelClient.OpenSession"></see> method, unless you specify that the calculation should run on the local computer.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ExcelClient.Driver">
+			<summary>Gets the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> object that interacts with the currently open Excel workbook.</summary>
+			<returns>The <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> object that interacts with the currently open Excel workbook.</returns>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelClientException">
+			<summary>Indicates that the <see cref="T:Microsoft.Hpc.Excel.ExcelClient"></see> object encountered an error with a nonspecific cause.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClientException.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelClientException"></see> class without specifying an error message, inner exception, or serialized data.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClientException.#ctor(System.String)">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelClientException"></see> class with the specified error message.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClientException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelClientException"></see> class with serialized data.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelClientException.#ctor(System.String,System.Exception)">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelClientException"></see> class with the specified error message and a reference to the inner exception that is the cause of this exception.</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelDriver">
+			<summary>Provides a wrapper around an instance of Excel that simplifies starting Excel and interacting with the component object model (COM) objects that represent items in Excel such as the application, workbook, and worksheets.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class without specifying the workbook or instance of Excel that the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> object should use.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.#ctor(Microsoft.Office.Interop.Excel.Workbook)">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class that uses the specified workbook and attaches to the associated Excel application.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.Dispose">
+			<summary>Releases all of the resources that the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> object used.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.GetBashedPopups">
+			<summary>Gets the <see cref="T:Microsoft.Hpc.Excel.PopupMessage"></see> objects that represent the message boxes that the pop-up blocker dismissed, and clears the internal list of messages.</summary>
+			<returns>An array of <see cref="T:Microsoft.Hpc.Excel.PopupMessage"></see> objects that represent the message boxes that the pop-up blocker dismissed.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.GetCellValue(System.String)">
+			<summary>Gets the values from one or more specified cells in the currently open workbook.</summary>
+			<returns>A <see cref="T:System.Object"></see> that represents the values in the specified cells.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.LaunchExcelProcess">
+			<summary>Starts a process running Excel and sets the <see cref="P:Microsoft.Hpc.Excel.ExcelDriver.App"></see> and <see cref="P:Microsoft.Hpc.Excel.ExcelDriver.ExcelProcess"></see> properties.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.OpenWorkbook(System.String)">
+			<summary>Opens the specified Excel workbook on the local computer.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.OpenWorkbook(System.String,System.Nullable{System.DateTime})">
+			<summary>Opens the specified Excel workbook on the local computer if the date that the workbook was last saved matches the specified date.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.OpenWorkbook(System.String,System.Boolean,System.String,System.String,System.Nullable{System.DateTime})">
+			<summary>Opens the specified Excel workbook on the local computer if the date that the workbook was last saved matches the specified date, using the specified passwords if the workbook is protected or write-reserved.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.RunMacro(System.String,System.Object[])">
+			<summary>Runs the specified macro with the specified input on the currently open Excel workbook.</summary>
+			<returns>A <see cref="T:System.Object"></see> object that represents the return value of the macro.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelDriver.SetCellValue(System.String,System.String)">
+			<summary>Sets the values in one or more specified cells in the currently open workbook.</summary>
+			<returns>None.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ExcelDriver.App">
+			<summary>Gets or sets a reference to the <see cref="T:Microsoft.Office.Interop.Excel.Application"></see> object that the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class uses for component object model (COM) interoperability with the running instance of Excel.</summary>
+			<returns>The <see cref="T:Microsoft.Office.Interop.Excel.Application"></see> that the <see cref="T:Microsoft.Hpc.Excel.ExcelDriver"></see> class uses for component object model (COM) interoperability with the running instance of Excel.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ExcelDriver.ExcelProcess">
+			<summary>Gets the <see cref="T:System.Diagnostics.Process"></see> object that represents the process that is running Excel on the local computer.</summary>
+			<returns>A <see cref="T:System.Diagnostics.Process"></see> object that represents the process that is running Excel on the local computer.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ExcelDriver.Sheets">
+			<summary>Gets or sets the collection of worksheets in the currently open workbook.</summary>
+			<returns>A <see cref="T:Microsoft.Office.Interop.Excel.Sheets"></see> object that represents the collection of worksheets in the currently open workbook.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ExcelDriver.Workbook">
+			<summary>Gets the currently open Excel workbook.</summary>
+			<returns>A <see cref="T:Microsoft.Office.Interop.Excel.Workbook"></see> object that represents the currently open Excel workbook.</returns>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.PopupMessage">
+			<summary>Represents a message box that the pop-up blocker dismissed while running calculations for an Excel workbook on an HPC cluster.</summary>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.PopupMessage.MessageText">
+			<summary>Gets the text of the message in the dismissed message box.</summary>
+			<returns>A <see cref="T:System.String"></see> that contains the text of the message.</returns>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.PopupMessage.TitleBar">
+			<summary>Gets the text in the title bar of the dismissed message box.</summary>
+			<returns>A <see cref="T:System.String"></see> that contains the text in the title bar.</returns>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ResponseErrorEventArgs">
+			<summary>Contains data about errors that occurred in getting responses from the HPC cluster for calculation requests.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ResponseErrorEventArgs.#ctor(System.Exception)">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ResponseErrorEventArgs"></see> class with the specified exception.</summary>
+		</member>
+		<member name="P:Microsoft.Hpc.Excel.ResponseErrorEventArgs.ResponseException">
+			<summary>Gets the exception that the response handler received from the broker.</summary>
+			<returns>A <see cref="T:System.Exception"></see> object that represents the exception that the response handler received from the broker.</returns>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.WorkItem">
+			<summary>Represents a list of parameter values that you want to pass to an Excel macro when performing a calculation for a workbook or a list of results from a calculation.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> class without information about any values for macro parameters.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.#ctor(System.Object[])">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> class with an array of objects that specify values for the parameters of an Excel macro.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.Deserialize(System.Byte[])">
+			<summary>Deserializes the specified string by converting it to the equivalent <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object.</summary>
+			<returns>A <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object that corresponds to the specified array of bytes.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.Get``1(System.Int32)">
+			<summary>Gets the object at the specified position in the list of objects that the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object contains.</summary>
+			<returns>The object with the type that the type parameter specifies that is at the specified position in the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see>.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.GetAll">
+			<summary>Gets all of the objects that the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object contains.</summary>
+			<returns>An array of the objects that the <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object contains.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.Insert``1(System.Int32,``0)">
+			<summary>Inserts an object of the specified type at the specified position in the array of objects that the WorkItem object contains.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.WorkItem.Serialize(Microsoft.Hpc.Excel.WorkItem)">
+			<summary>Serializes the specified <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object as an array of bytes that you can use as part of a <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see> object.</summary>
+			<returns>An array of <see cref="T:System.Byte"></see> objects that represents the specified <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see>.</returns>
+		</member>
+		<member name="N:Microsoft.Hpc.Excel.Com">
+			<summary>Provides the functionality of the <see cref="T:Microsoft.Hpc.Excel.ExcelClient"></see> class over the Component Object Model (COM).</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.Com.ExcelClient">
+			<summary>Provides the functionality of the <see cref="T:Microsoft.Hpc.Excel.ExcelClient"></see> class over the Component Object Model (COM).</summary>
+		</member>
+		<member name="N:Microsoft.Hpc.Excel.ExcelService">
+			<summary>Provides classes and interfaces for custom clients to use to request that the built-in Excel SOA service perform calculations from Excel workbooks on HPC clusters.</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest">
+			<summary>Represents a request to the built-in Excel SOA service to perform the calculation in a specified macro for an Excel workbook using the specified input.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.CalculateRequest.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see> class without specifying the macro in the Excel workbook to call or the input for that macro.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.CalculateRequest.#ctor(System.String,System.Byte[],System.Nullable{System.DateTime})">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see> class without the specified values for the name of the macro in the Excel workbook that should perform the calculation, the input for that macro, and the date that the Excel workbook was last saved.</summary>
+		</member>
+		<member name="F:Microsoft.Hpc.Excel.ExcelService.CalculateRequest.inputs">
+			<summary>Contains an array of bytes that is a serialized form of a <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object that represents the values for the parameters that you want to pass as input to the macro that performs the calculation.</summary>
+		</member>
+		<member name="F:Microsoft.Hpc.Excel.ExcelService.CalculateRequest.lastSaveDate">
+			<summary>Contains a <see cref="T:System.DateTime"></see> structure that specifies the date and time that the Excel Workbook should have most recently been saved in order for the calculation to proceed, or null if the calculation should proceed regardless of the date and the time that the Excel workbook was last saved.</summary>
+		</member>
+		<member name="F:Microsoft.Hpc.Excel.ExcelService.CalculateRequest.macroName">
+			<summary>Contains a string that specifies the name of the macro in an Excel workbook that the built-in Excel SOA service should use to perform the requested calculation.</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelService.CalculateResponse">
+			<summary>Represents a response from the built-in Excel SOA service that includes the results of a calculation for an Excel workbook.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.CalculateResponse.#ctor">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateResponse"></see> class.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.CalculateResponse.#ctor(System.Byte[])">
+			<summary>Initializes a new instance of the <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateResponse"></see> class with the specified serialized form of the results of the calculation.</summary>
+		</member>
+		<member name="F:Microsoft.Hpc.Excel.ExcelService.CalculateResponse.CalculateResult">
+			<summary>Contains an array of bytes that is a serialized form of a <see cref="T:Microsoft.Hpc.Excel.WorkItem"></see> object. This object represents the results of a calculation that you initiated by calling the <see cref="Overload:Microsoft.Hpc.Scheduler.Session.BrokerClient`1.SendRequest``1"></see> method for the with a type parameter of <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see>.</summary>
+		</member>
+		<member name="T:Microsoft.Hpc.Excel.ExcelService.IExcelService">
+			<summary>Represents the built-in service-oriented architecture (SOA) service for performing calculations in Excel workbooks using a Microsoft HPC server. This service is the service that the built-in client represented by the <see cref="T:Microsoft.Hpc.Excel.ExcelClient"></see> class uses, and is also available for use by custom SOA clients.</summary>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.IExcelService.BeginCalculate(Microsoft.Hpc.Excel.ExcelService.CalculateRequest,System.AsyncCallback,System.Object)">
+			<summary>Begins a calculation in an Excel workbook requested by the specified <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see> object on an HPC cluster asynchronously.</summary>
+			<returns>An <see cref="T:System.IAsyncResult"></see> interface to an object that contains information about the status of the asynchronous calculation.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.IExcelService.Calculate(Microsoft.Hpc.Excel.ExcelService.CalculateRequest)">
+			<summary>Performs the calculation in an Excel workbook requested by the specified <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateRequest"></see> object on an HPC cluster.</summary>
+			<returns>A <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateResponse"></see> object that includes the results of the calculation.</returns>
+		</member>
+		<member name="M:Microsoft.Hpc.Excel.ExcelService.IExcelService.EndCalculate(System.IAsyncResult)">
+			<summary>Ends a asynchronous calculation from an Excel workbook on an HPC cluster that you began by calling <see cref="M:Microsoft.Hpc.Excel.ExcelService.IExcelService.BeginCalculate(Microsoft.Hpc.Excel.ExcelService.CalculateRequest,System.AsyncCallback,System.Object)"></see>.</summary>
+			<returns>A <see cref="T:Microsoft.Hpc.Excel.ExcelService.CalculateResponse"></see> that contains the result of the calculation from an Excel workbook.</returns>
+		</member>
+	</members>
+</doc>

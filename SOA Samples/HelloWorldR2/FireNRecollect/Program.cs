@@ -6,9 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Hpc.Scheduler.Session;
 using FireNRecollect.EchoService;
 using System.ServiceModel;
@@ -25,10 +22,10 @@ namespace FireNRecollect
             if (args.Length == 1)
             {
                 // attach to the session
-                int sessionId = Int32.Parse(args[0]);
+                int sessionId = int.Parse(args[0]);
                 SessionAttachInfo info = new SessionAttachInfo(headnode, sessionId);
 
-                Console.Write("Attaching to session {0}...", sessionId);
+                Console.WriteLine("Attaching to session {0}...", sessionId);
                 // Create attach to a session 
                 using (DurableSession session = DurableSession.AttachSession(info))
                 {
@@ -57,19 +54,24 @@ namespace FireNRecollect
             {
                 // Create a durable session, fire the requests and exit
                 SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
-                Console.Write("Creating a session...");
+                // If the cluster is non-domain joined, add the following statement
+                // info.Secure = false;
+
+                Console.WriteLine("Creating a session...");
                 using (DurableSession session = DurableSession.CreateSession(info))
                 {
                     Console.WriteLine("done session id = {0}.", session.Id);
                     NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+                    // If the cluster is non-domain joined, use the following statement
+                    // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
 
                     using (BrokerClient<IService1> client = new BrokerClient<IService1>(session, binding))
                     {
-                        Console.Write("Sending requests...");
+                        Console.WriteLine("Sending requests...");
                         for (int i = 0; i < 12; i++)
                         {
                             EchoRequest request = new EchoRequest("hello world!");
-                            client.SendRequest<EchoRequest>(request, i);
+                            client.SendRequest(request, i);
                         }
                         client.EndRequests();
                         Console.WriteLine("done");
@@ -78,7 +80,6 @@ namespace FireNRecollect
                     Console.WriteLine("Type \"FileNRecollect.exe {0}\" to collect the results", session.Id);
                 }
             }
-
         }
     }
 }

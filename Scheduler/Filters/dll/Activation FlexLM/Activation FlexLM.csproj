@@ -132,8 +132,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\x64\mc.exe" -css FlexLM   "$(ProjectDir)FlexLMEvents.man"
-"C:\Program Files (x86)\Windows Kits\10\bin\x64\rc.exe" "$(TargetDir)FlexLMEvents.rc"
+    <PreBuildEvent>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\mc.exe" -css FlexLM   "$(ProjectDir)FlexLMEvents.man"
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\rc.exe" "$(TargetDir)FlexLMEvents.rc"
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
