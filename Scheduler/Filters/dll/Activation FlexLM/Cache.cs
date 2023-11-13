@@ -78,7 +78,7 @@ namespace FlexLM
             PollServerFailed = false;
         }
         public SerializableCachedData(CachedData cd)
-            : base()
+            : this()
         {
             Pass = cd.Pass;
             PollServerFailed = cd.PollServerFailed;
@@ -105,7 +105,7 @@ namespace FlexLM
         }
 
         public CachedData(SerializableCachedData scd)
-            : base()
+            : this()
         {
             Pass = scd.Pass;
             PollServerFailed = scd.PollServerFailed;

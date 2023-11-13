@@ -6,13 +6,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
-using System.ServiceModel;
 
 namespace HelloWorldR2ServiceVersioning
 {
@@ -37,11 +33,10 @@ namespace HelloWorldR2ServiceVersioning
             //Here is should be version 1.1 for v3 sp2
             Console.WriteLine("The latest version is {0}", latest);
 
-
             //Create a session for Microsoft.Hpc.Excel.XllContainer64 with the latest version
             SessionStartInfo info = new SessionStartInfo(headnode, serviceName, latest);
 
-            Console.Write("Creating a session for Microsoft.Hpc.Excel.XllContainer64 version {0} ...", latest);
+            Console.WriteLine("Creating a session for Microsoft.Hpc.Excel.XllContainer64 version {0} ...", latest);
 
             // Create a durable session 
             using (DurableSession session = DurableSession.CreateSession(info))

@@ -6,9 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
@@ -17,11 +14,9 @@ using Microsoft.Hpc.Scheduler.Session;
 // which includes the HPC Scheduler API.   
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
-
 using HelloWorldR2OnExit.EchoService;
 using System.ServiceModel;
 using System.Threading;
-using System.Configuration;
 
 namespace HelloWorldR2OnExit
 {
@@ -29,34 +24,37 @@ namespace HelloWorldR2OnExit
     {
         static void Main(string[] args)
         {
-
             //change the headnode name here
             const string headnode = "[headnode]";
             const string serviceName = "EchoService";
             const int numRequests = 8;
 
             SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
+            // If the cluster is non-domain joined, add the following statement
+            // info.Secure = false;
 
             //the sample code needs at least 2 cores in the cluster
             info.SessionResourceUnitType = SessionUnitType.Core;
             info.MaximumUnits = 2;
             info.MinimumUnits = 2;
 
-            Console.Write("Creating a session for EchoService...");
+            Console.WriteLine("Creating a session for EchoService...");
             using (DurableSession session = DurableSession.CreateSession(info))
             {
                 Console.WriteLine("done session id = {0}", session.Id);
+
                 NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+                // If the cluster is non-domain joined, use the following statement
+                // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
 
                 using (BrokerClient<IService1> client = new BrokerClient<IService1>(session, binding))
                 {
-
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine("Sending {0} requests...", numRequests);
 
                     for (int i = 0; i < numRequests; i++)
                     {
                         EchoOnExitRequest request = new EchoOnExitRequest(new TimeSpan(0, 0, 5));
-                        client.SendRequest<EchoOnExitRequest>(request, i);
+                        client.SendRequest(request, i);
                     }
 
                     client.EndRequests();
@@ -111,9 +109,7 @@ namespace HelloWorldR2OnExit
                         {
                             Console.WriteLine("Exception when trying to cancel the service tasks. {0}", ex.Message);
                         }
-
                     });
-
 
                     Console.WriteLine("Retrieving responses...");
 
@@ -136,7 +132,6 @@ namespace HelloWorldR2OnExit
                         }
 
                         Console.WriteLine("Done retrieving responses.{0}/{1} responses retrieved ", count, numRequests);
-
                     }
                     catch (SessionException ex)
                     {

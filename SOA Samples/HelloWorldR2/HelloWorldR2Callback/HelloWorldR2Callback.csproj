@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HelloWorldR2Callback</RootNamespace>
     <AssemblyName>HelloWorldR2Callback</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -56,13 +56,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CcpAPI, Version=1.0.2.3, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\CcpApi.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="BrokerBase, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\BrokerBase.dll</HintPath>
     </Reference>
-    <Reference Include="HpcCommon, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\HpcCommon.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CcpApi, Version=1.0.2.3, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\CcpApi.dll</HintPath>
+    </Reference>
+    <Reference Include="HpcCommon, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\HpcCommon.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.2.0.4\lib\net45\Microsoft.Azure.KeyVault.Core.dll</HintPath>
@@ -80,45 +81,44 @@
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.8.3\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Hpc.AADAuthUtil, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.AADAuthUtil.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.AADAuthUtil, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.AADAuthUtil.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Azure.DataMovement, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Azure.DataMovement.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Azure.DataMovement, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Azure.DataMovement.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Azure.FileStaging.Client, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Azure.FileStaging.Client.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Azure.FileStaging.Client, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Azure.FileStaging.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Diagnostics.Helpers, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Diagnostics.Helpers.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Diagnostics.Helpers, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Diagnostics.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Excel, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Excel.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Excel, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Excel.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Excel.Internal, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Excel.Internal.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Excel.Internal, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Excel.Internal.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Scheduler.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Scheduler, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Scheduler.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler.Properties, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Scheduler.Properties.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Scheduler.Properties, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Scheduler.Properties.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler.Session, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Scheduler.Session.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Scheduler.Session, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Scheduler.Session.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Hpc.Scheduler.Store, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.HPC.SDK.5.1.6088\lib\net45\Microsoft.Hpc.Scheduler.Store.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Hpc.Scheduler.Store, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.HPC.SDK.6.2.7756\lib\net472\Microsoft.Hpc.Scheduler.Store.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.16.0.14, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.16.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.16.0.14, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.16.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.40306.1554, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.4.403061554\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=8.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\WindowsAzure.Storage.8.7.0\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
@@ -132,10 +132,12 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.40306.1554, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.4.403061554\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -145,6 +147,11 @@
     </Reference>
     <Reference Include="System.Spatial, Version=5.8.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\System.Spatial.5.8.3\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq">

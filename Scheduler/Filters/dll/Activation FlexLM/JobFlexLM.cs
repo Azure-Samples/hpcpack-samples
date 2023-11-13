@@ -8,15 +8,12 @@
  *  Note these sample sources utilize windows event logging and the resulting
  *  DLL should be registered with "weveutil.exe".  Please see MSDN or the post-build events in
  *  the csproj for the .exe version of the FlexLM sample.
- * 
 */
-
 
 using System;
 using System.Collections;
 using System.Xml;
 using System.IO;
-
 using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
 
 namespace FlexLM
@@ -193,7 +190,7 @@ namespace FlexLM
             if (jobidnode != null)
             {
                 string JobIdStr = jobidnode.InnerXml;
-                Int32.TryParse(JobIdStr, out _jobId);
+                int.TryParse(JobIdStr, out _jobId);
             }
             else
             {
@@ -206,7 +203,7 @@ namespace FlexLM
             if (jobidnode != null)
             {
                 string JobStateStr = jobidnode.InnerXml;
-                if (String.IsNullOrEmpty(JobStateStr))
+                if (string.IsNullOrEmpty(JobStateStr))
                 {
                     LogEvent(@"Unable to extract job state from job file");
                     return;
@@ -222,7 +219,6 @@ namespace FlexLM
                 return;
             }
 
-
             // Get the SoftwareLicense job property.
             XmlNode jobnode = job.SelectSingleNode(@"@SoftwareLicense", nsmgr);
 
@@ -234,7 +230,7 @@ namespace FlexLM
 
             // Extract the value of the SoftwareLicense property.
             string licenseStr = jobnode.InnerXml;
-            if (String.IsNullOrEmpty(licenseStr))
+            if (string.IsNullOrEmpty(licenseStr))
             {
                 // This job doesn't require licenses
                 return;
@@ -250,8 +246,7 @@ namespace FlexLM
                 string[] ftokens = str.Split(':');
                 if (ftokens.Length == 2)
                 {
-                    Int32 numberOfLicenses = 0;
-                    if (Int32.TryParse(ftokens[1], out numberOfLicenses))
+                    if (int.TryParse(ftokens[1], out int numberOfLicenses))
                     {
                         _requestedFeatures[ftokens[0]] = numberOfLicenses;
                     }

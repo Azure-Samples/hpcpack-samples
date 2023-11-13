@@ -6,6 +6,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 
@@ -15,7 +16,7 @@ namespace JobProgress
     {
         static ManualResetEvent jobStatus = new ManualResetEvent(false);
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
@@ -26,7 +27,7 @@ namespace JobProgress
                 Console.WriteLine("Connecting to cluster {0}", clusterName);
                 scheduler.Connect(clusterName);
 
-                //create a job equilvalent to the cmdline string: job submit /parametric:1-500 "echo *"
+                //create a job equivalent to the cmdline string: job submit /parametric:1-500 "echo *"
                 Console.WriteLine("Creating parametric sweep job");
                 //first create a SchedulerJob object
                 ISchedulerJob job = scheduler.CreateJob();
@@ -46,18 +47,18 @@ namespace JobProgress
                 job.AddTask(task);
 
                 //Create an event handler so that we know when the job starts running
-                job.OnJobState += new EventHandler<JobStateEventArg>(job_OnJobState);
+                job.OnJobState += new EventHandler<JobStateEventArg>(Job_OnJobState);
 
                 //and submit
                 //you will be prompted for your credentials if they aren't already cached
                 Console.WriteLine("Submitting job...");
                 scheduler.SubmitJob(job, null, null);
                 Console.WriteLine("Job submitted");
-                
+
                 //Wait for the job to start running
                 jobStatus.WaitOne();
                 jobStatus.Reset();
-                
+
                 //you can get realtime updates on the job through the api
                 //we'll keep checking every second for 5 seconds
                 for (int i = 0; i < 5; i++)
@@ -67,7 +68,7 @@ namespace JobProgress
                     Console.Write("Current job progress: " + job.Progress);
                     Console.SetCursorPosition(0, Console.CursorTop);
                     //we want to check again after a second
-                    Thread.Sleep(1 * 1000);
+                    await Task.Delay(1 * 1000);
                 }
 
                 //this field isn't read-only. You can specify your own progress value depending on your needs
@@ -98,11 +99,9 @@ namespace JobProgress
                 //close the scheduler connection
                 scheduler.Close();
             }
-
-
         }
 
-        static void job_OnJobState(object sender, JobStateEventArg e)
+        static void Job_OnJobState(object sender, JobStateEventArg e)
         {
             //we want to check that the job is in the Running state or these finishing states.
             if (e.NewState == JobState.Running ||
@@ -110,7 +109,7 @@ namespace JobProgress
                 e.NewState == JobState.Canceled ||
                 e.NewState == JobState.Failed)
             {
-                Console.WriteLine("Job is " + e.NewState.ToString());
+                Console.WriteLine("Job status has been converted to: " + e.NewState.ToString());
                 //allow the main thread to continue
                 jobStatus.Set();
             }

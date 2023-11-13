@@ -6,9 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 // This namespace is defined in the HPC Server 2016 SDK
 // which includes the HPC SOA Session API.   
 using Microsoft.Hpc.Scheduler.Session;
@@ -28,8 +25,10 @@ namespace HelloWorldR2MultiBatch
         static void Main(string[] args)
         {
             SessionStartInfo info = new SessionStartInfo(headnode ,serviceName);
+            // If the cluster is non-domain joined, add the following statement
+            // info.Secure = false;
 
-            Console.Write("Creating a session for EchoService...");
+            Console.WriteLine("Creating a session for EchoService...");
 
             // Create a durable session 
             // Request and response messages in a durable session are persisted so that
@@ -57,14 +56,17 @@ namespace HelloWorldR2MultiBatch
 
             Console.WriteLine("Press any key to exit.");
             Console.Read();
-        
         }
 
         private static void Worker(int sessionId)
         {
             DurableSession session = DurableSession.AttachSession(new SessionAttachInfo(headnode, sessionId));
             int numRequests = 32;
+
             NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
+            // If the cluster is non-domain joined, use the following statement
+            // NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
+
             string guid = Guid.NewGuid().ToString();
 
             // Create a BrokerClient proxy
@@ -75,13 +77,13 @@ namespace HelloWorldR2MultiBatch
 
             using (BrokerClient<IService1> client = new BrokerClient<IService1>(guid, session, binding))
             {
-                Console.Write("Sending {0} requests...", numRequests);
+                Console.WriteLine("Sending {0} requests...", numRequests);
                 for (int i = 0; i < numRequests; i++)
                 {
                     // EchoRequest are created as you add Service Reference
                     // EchoService to the project
                     EchoRequest request = new EchoRequest("hello world!");
-                    client.SendRequest<EchoRequest>(request, i);
+                    client.SendRequest(request, i);
                 }
 
                 // Flush the message.  After this call, the runtime system
