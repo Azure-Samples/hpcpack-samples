@@ -17,7 +17,7 @@ namespace DynamicNodeGroups
         //for best results, run this sample code in queued scheduling mode
         static async Task Main(string[] args)
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
             using (IScheduler scheduler = new Scheduler())
             {
                 Console.WriteLine("Connecting to {0}", clusterName);
@@ -122,7 +122,7 @@ namespace DynamicNodeGroups
             }
         }
 
-        static void Job_OnTaskState(object sender, TaskStateEventArg e)
+        static void Job_OnTaskState(object? sender, TaskStateEventArg e)
         {
             if (e.NewState == TaskState.Running)
             {
