@@ -4,8 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 
@@ -86,7 +84,7 @@ namespace WaitForjob
 
         static void Main(string[] args)
         {
-            string headNode = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? headNode = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
             using (IScheduler scheduler = new Scheduler())
             {
