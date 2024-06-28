@@ -4,8 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 
@@ -13,8 +11,8 @@ namespace HPCSchedulerBasics
 {
     class Program
     {
-        static ISchedulerJob job;
-        static ISchedulerTask task;
+        static ISchedulerJob? job;
+        static ISchedulerTask? task;
         static ManualResetEvent jobFinishedEvent = new ManualResetEvent(false);
 
         static void ShowHelp()
@@ -34,8 +32,8 @@ namespace HPCSchedulerBasics
         static int Main(string[] args)
         {
             bool debug = false;
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
-            string userName = null;
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? userName = null;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -74,83 +72,82 @@ namespace HPCSchedulerBasics
 
             // Create a scheduler object to be used to 
             // establish a connection to the scheduler on the headnode
-            using (IScheduler scheduler = new Scheduler())
+            using IScheduler scheduler = new Scheduler();
+            try
             {
-                try
+                if (userName != null)
                 {
-                    if (userName != null)
-                    {
-                        // Connect to the scheduler as another user
-                        Console.WriteLine("Connecting to {0} as {1}...", clusterName, userName);
-                        scheduler.ConnectServiceAsClient(clusterName, () => userName);
-                    }
-                    else
-                    {
-                        // Connect to the scheduler
-                        Console.WriteLine("Connecting to {0}...", clusterName);
-                        scheduler.Connect(clusterName);
-                    }
+                    // Connect to the scheduler as another user
+                    Console.WriteLine("Connecting to {0} as {1}...", clusterName, userName);
+                    scheduler.ConnectServiceAsClient(clusterName, () => userName);
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.Error.WriteLine("Could not connect to the scheduler: {0}", e.Message);
-                    return 1; //abort if no connection could be made
+                    // Connect to the scheduler
+                    Console.WriteLine("Connecting to {0}...", clusterName);
+                    scheduler.Connect(clusterName);
                 }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("Could not connect to the scheduler: {0}", e.Message);
+                return 1; //abort if no connection could be made
+            }
 
-                //Create a job to submit to the scheduler
-                //the job will be equivalent to the CLI command: job submit /numcores:1-1 "echo hello world"
-                job = scheduler.CreateJob();
+            //Create a job to submit to the scheduler
+            //the job will be equivalent to the CLI command: job submit /numcores:1-1 "echo hello world"
+            job = scheduler.CreateJob();
 
-                //Some of the optional job parameters to specify. If omitted, defaults are:
-                // Name = {blank}
-                // UnitType = Core
-                // Min/Max Resources = Autocalculated
-                // etc...
+            //Some of the optional job parameters to specify. If omitted, defaults are:
+            // Name = {blank}
+            // UnitType = Core
+            // Min/Max Resources = Autocalculated
+            // etc...
 
-                job.Name = "HPCSchedulerBasics Job";
-                Console.WriteLine("Creating job name {0}...", job.Name);
+            job.Name = "HPCSchedulerBasics Job";
+            Console.WriteLine("Creating job name {0}...", job.Name);
 
-                job.UnitType = JobUnitType.Core;
+            job.UnitType = JobUnitType.Core;
 
-                job.AutoCalculateMin = false;
-                job.AutoCalculateMax = false;
+            job.AutoCalculateMin = false;
+            job.AutoCalculateMax = false;
 
-                job.MinimumNumberOfCores = 1;
-                job.MaximumNumberOfCores = 1;
+            job.MinimumNumberOfCores = 1;
+            job.MaximumNumberOfCores = 1;
 
-                //Create a task to submit to the job
-                task = job.CreateTask();
-                task.Name = "Hello World";
-                Console.WriteLine("Creating a {0} task...", task.Name);
+            //Create a task to submit to the job
+            task = job.CreateTask();
+            task.Name = "Hello World";
+            Console.WriteLine("Creating a {0} task...", task.Name);
 
-                //The commandline parameter tells the scheduler what the task should do
-                //CommandLine is the only mandatory parameter you must set for every task
-                task.CommandLine = "echo Hello World";
+            //The commandline parameter tells the scheduler what the task should do
+            //CommandLine is the only mandatory parameter you must set for every task
+            task.CommandLine = "echo Hello World";
 
-                //Don't forget to add the task to the job!
-                job.AddTask(task);
+            //Don't forget to add the task to the job!
+            job.AddTask(task);
 
-                //Use callback to check if a job is finished
-                job.OnJobState += new EventHandler<JobStateEventArg>(job_OnJobState);
+            //Use callback to check if a job is finished
+            job.OnJobState += new EventHandler<JobStateEventArg>(Job_OnJobState);
 
-                //And to submit the job.
-                //You can specify your username and password in the parameters, or set them to null and you will be prompted for your credentials
-                Console.WriteLine("Submitting job to the cluster...");
-                Console.WriteLine();
+            //And to submit the job.
+            //You can specify your username and password in the parameters, or set them to null and you will be prompted for your credentials
+            Console.WriteLine("Submitting job to the cluster...");
+            Console.WriteLine();
 
-                scheduler.SubmitJob(job, null, null);
+            scheduler.SubmitJob(job, null, null);
 
-                //wait for job to finish
-                jobFinishedEvent.WaitOne();
+            //wait for job to finish
+            jobFinishedEvent.WaitOne();
 
-                //Close the connection
-                scheduler.Close();
+            //Close the connection
+            scheduler.Close();
 
-                return 0;
-            } //Call scheduler.Dispose() to free the object when finished
+            return 0;
+            //Call scheduler.Dispose() to free the object when finished
         }
 
-        static void job_OnJobState(object sender, JobStateEventArg e)
+        static void Job_OnJobState(object? sender, JobStateEventArg e)
         {
             if (e.NewState == JobState.Finished) //the job is finished
             {
