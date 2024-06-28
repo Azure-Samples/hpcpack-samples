@@ -4,12 +4,9 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace DynamicNodeGroups
 {
@@ -25,7 +22,7 @@ namespace DynamicNodeGroups
             {
                 Console.WriteLine("Connecting to {0}", clusterName);
                 scheduler.Connect(clusterName);
-
+                Console.WriteLine("Connected");
                 //assume you have two nodegroups, NodeGroup1 and NodeGroup2
                 IStringCollection nodeGroup1 = scheduler.GetNodesInNodeGroup("NodeGroup1");
                 IStringCollection nodeGroup2 = scheduler.GetNodesInNodeGroup("NodeGroup2");
@@ -58,7 +55,7 @@ namespace DynamicNodeGroups
                 job.UnitType = JobUnitType.Node;
 
                 ISchedulerTask task = job.CreateTask();
-                task.CommandLine = "ver";
+                task.CommandLine = "uname";
 
                 //TaskType.Service means starting new instances endlessly until the task is canceled
                 task.Type = TaskType.Service;
