@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.HPC.SDK" Version="6.3.8180" />
+    <PackageReference Include="Microsoft.HPC.SDK" Version="6.3.8187-beta" />
   </ItemGroup>
 
 </Project>

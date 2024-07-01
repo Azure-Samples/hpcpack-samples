@@ -55,7 +55,7 @@ namespace DynamicNodeGroups
                 job.UnitType = JobUnitType.Node;
 
                 ISchedulerTask task = job.CreateTask();
-                task.CommandLine = "uname";
+                task.CommandLine = "ver";
 
                 //TaskType.Service means starting new instances endlessly until the task is canceled
                 task.Type = TaskType.Service;
