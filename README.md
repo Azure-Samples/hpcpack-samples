@@ -8,16 +8,18 @@ languages:
 - vb
 products:
 - azure
-description: "Sample code of Microsoft HPC Pack 2016 RTM / Update 1 / Update 2"
+description: "Sample code of Microsoft HPC Pack 2019"
 urlFragment: hpcpack-samples
 ---
 
-# Microsoft HPC Pack 2016 Sample Code
-Sample code of Microsoft HPC Pack 2016 RTM / Update 1 / Update 2
+# Microsoft HPC Pack 2019 Sample Code
+Sample code of Microsoft HPC Pack 2019
 
-Please choose SDK version (_in VisualStudio or by altering packages.config_) according to your need
-- Version 5.0.5931: When connecting to __Microsoft HPC Pack 2016 RTM__
-- Version 5.1.6088 or later (default): When connecting to __Microsoft HPC Pack 2012__ or __Microsoft HPC Pack 2016 Update 1__ and later versions
+Please choose SDK version (_in VisualStudio or by altering .csproj) according to your need:
+- Version 6.3.8187-beta: preview SDK with Linux support
+- Version 6.2.7756: for __Microsoft HPC Pack 2019 Update 2__
+- Version 6.1.7531: for __Microsoft HPC Pack 2019 Update 1__
+- Version 6.0.7121 or 6.0.7205: for __Microsoft HPC Pack 2019 RTM__
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to
