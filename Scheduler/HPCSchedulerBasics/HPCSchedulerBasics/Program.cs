@@ -73,25 +73,17 @@ namespace HPCSchedulerBasics
             // Create a scheduler object to be used to 
             // establish a connection to the scheduler on the headnode
             using IScheduler scheduler = new Scheduler();
-            try
+            if (userName != null)
             {
-                if (userName != null)
-                {
-                    // Connect to the scheduler as another user
-                    Console.WriteLine("Connecting to {0} as {1}...", clusterName, userName);
-                    scheduler.ConnectServiceAsClient(clusterName, () => userName);
-                }
-                else
-                {
-                    // Connect to the scheduler
-                    Console.WriteLine("Connecting to {0}...", clusterName);
-                    scheduler.Connect(clusterName);
-                }
+                // Connect to the scheduler as another user
+                Console.WriteLine("Connecting to {0} as {1}...", clusterName, userName);
+                scheduler.ConnectServiceAsClient(clusterName, () => userName);
             }
-            catch (Exception e)
+            else
             {
-                Console.Error.WriteLine("Could not connect to the scheduler: {0}", e.Message);
-                return 1; //abort if no connection could be made
+                // Connect to the scheduler
+                Console.WriteLine("Connecting to {0}...", clusterName);
+                scheduler.Connect(clusterName);
             }
 
             //Create a job to submit to the scheduler
