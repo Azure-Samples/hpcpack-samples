@@ -21,6 +21,32 @@ Please choose SDK version (_in VisualStudio or by altering .csproj) according to
 - Version 6.1.7531: for __Microsoft HPC Pack 2019 Update 1__
 - Version 6.0.7121 or 6.0.7205: for __Microsoft HPC Pack 2019 RTM__
 
+## .NET Standard 2.0 and Linux support
+
+### Registry
+The Linux SDK supports specifying configuration originally taken care of by Windows registry keys by environment variables prefixed with `CCP_CONFIG_`. For example, the `ClusterConnectionString` registry key under `HKLM\SOFTWARE\Microsoft\HPC` can be specified on Linux by passing in the environment variable `CCP_CONFIG_ClusterConnectionString`.
+
+In addition, configuration can be specified via the `/etc/hpcpack/config.json` configuration file for `HKEY_LOCAL_MACHINE\Software\Microsoft\HPC` registry keys, and `~/.hpcpack.json` for `HKEY_CURRENT_USER\Software\Microsoft\HPC` registry keys.
+
+### Logging
+Logging can be configured via `appsettings.json`. See [here](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line#configure-logging-without-code) for more information.
+
+## Known issues with .NET Standard 2.0 SDK and Linux support
+- On Linux, users need to manually add their certificate into the appropriate [X.509 certificate store](https://learn.microsoft.com/en-us/dotnet/standard/security/cross-platform-cryptography#x509store) corresponding to `CurrentUser\My` and `LocalMachine\Root` for Linux. For `CurrentUser\My`, user would need to import their certificate using code similar to the following:
+```
+using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser, OpenFlags.ReadWrite))
+{
+    store.Add(new X509Certificate2(
+        "./thePathToTheCert.pfx", "passwordOfTheCert", 
+        X509KeyStorageFlags.PersistKeySet));
+}
+```
+For `LocalMachine\Root`, user would need to import the certificate into the default OpenSSL CA bundle using the appropriate command for your Linux distribution. See [here](https://ubuntu.com/server/docs/install-a-root-ca-certificate-in-the-trust-store) and [here](https://www.redhat.com/sysadmin/configure-ca-trust-list) for examples of how to do it on Ubuntu and RHEL.
+- When getting certificates from certificate stores on Windows and Linux, there is no UI pop-up when more than one certificate is available, resulting in no certificate being chosen and failure downstream.
+- Connecting to cluster via .NET Remoting is not supported
+- Entering credentials interactively is not supported. Pass username and password explicitly or use `CCP_USERNAME` and `CCP_PASSWORD` environment variables instead.
+- Excel isn't supported
+
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to
 agree to a Contributor License Agreement (CLA) declaring that you have the right to,
