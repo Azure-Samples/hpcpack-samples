@@ -26,7 +26,7 @@ Please choose SDK version (_in VisualStudio or by altering .csproj) according to
 ### Registry
 The Linux SDK supports specifying configuration originally taken care of by Windows registry keys by environment variables prefixed with `CCP_CONFIG_`. For example, the `CertificateValidationType` registry key under `HKLM\SOFTWARE\Microsoft\HPC` can be specified on Linux by passing in the environment variable `CCP_CONFIG_CertificateValidationType`.
 
-In addition, configuration can be specified via the `/etc/hpcpack/config.json` configuration file. For example, to configure `CertificateValidationType` to `1` (Skip CA check), use the following JSON config:
+In addition, configuration can be specified via the `/etc/hpcpack/config.json` configuration file. For example, to configure `CertificateValidationType` to `1` (Skip CN check), use the following JSON config:
 ```json
 {
 	"CertificateValidationType": 1
