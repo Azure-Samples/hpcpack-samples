@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34031.279
+VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPCSchedulerBasics", "HPCSchedulerBasics\HPCSchedulerBasics.csproj", "{872944C2-191D-4E71-BBF0-23CF870074CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPCSchedulerBasics", "HPCSchedulerBasics\HPCSchedulerBasics.csproj", "{100C544A-69F2-45C3-A2B5-C2EA42BFAC10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{872944C2-191D-4E71-BBF0-23CF870074CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{872944C2-191D-4E71-BBF0-23CF870074CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{872944C2-191D-4E71-BBF0-23CF870074CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{872944C2-191D-4E71-BBF0-23CF870074CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100C544A-69F2-45C3-A2B5-C2EA42BFAC10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100C544A-69F2-45C3-A2B5-C2EA42BFAC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100C544A-69F2-45C3-A2B5-C2EA42BFAC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100C544A-69F2-45C3-A2B5-C2EA42BFAC10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3A8BED5F-348C-47A3-B594-94895DD52993}
+		SolutionGuid = {9122ECAD-BEBF-479B-BA16-B52B3DFB9744}
 	EndGlobalSection
 EndGlobal

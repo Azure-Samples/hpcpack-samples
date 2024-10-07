@@ -4,9 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Hpc.Scheduler;
 
 namespace ReconnectEvents
@@ -18,7 +15,7 @@ namespace ReconnectEvents
         
         static async Task Main(string[] args)
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
             using (IScheduler scheduler = new Scheduler())
             {
@@ -52,7 +49,7 @@ namespace ReconnectEvents
             }
         }
 
-        static void Scheduler_OnSchedulerReconnect(object sender, ConnectionEventArg e)
+        static void Scheduler_OnSchedulerReconnect(object? sender, ConnectionEventArg e)
         {
             //check for Disconnect event
             if (e.Code == ConnectionEventCode.StoreDisconnect)

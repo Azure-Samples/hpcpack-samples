@@ -1,6 +1,5 @@
 ﻿using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
-using System;
 
 namespace SubmitTaskFast
 {
@@ -10,7 +9,7 @@ namespace SubmitTaskFast
 
         static void Main()
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
             using (IScheduler scheduler = new Scheduler())
             {
@@ -26,7 +25,8 @@ namespace SubmitTaskFast
 
                 // SubmitTask / SubmitTaskById must be called after a job is submitted
                 // SubmitTask / SubmitTaskById call will return when the task reaches the speficied state
-                TestSubmitTask(job, TaskState.Configuring | TaskState.Submitted);
+                // There could be chances that the task will skip Configuring or Submitted state and directly go to Queued state
+                TestSubmitTask(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
 
                 job = scheduler.CreateJob();
                 job.Name = "TestSubmitTaskById";
@@ -36,7 +36,7 @@ namespace SubmitTaskFast
                 job.AddTask(task);
                 scheduler.SubmitJob(job, null, null);
 
-                TestSubmitTaskById(job, TaskState.Configuring | TaskState.Submitted);
+                TestSubmitTaskById(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
 
                 scheduler.Close();
             }

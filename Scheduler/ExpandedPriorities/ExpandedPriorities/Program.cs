@@ -14,7 +14,7 @@ namespace ExpandedPriorities
     {
         static void Main(string[] args)
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
             //Create scheduler object and connect to scheduler
             using (IScheduler scheduler = new Scheduler())
