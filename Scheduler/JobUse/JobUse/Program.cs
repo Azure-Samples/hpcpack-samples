@@ -4,11 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
 using System.Reflection;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
@@ -20,11 +15,11 @@ namespace JobUse
     /// </summary>
     public class Location
     {
-        public string locationFullPath = null;
+        public string? locationFullPath = null;
 
         public Location()
         {
-            Assembly A = Assembly.GetAssembly(this.GetType());
+            Assembly? A = Assembly.GetAssembly(this.GetType());
             this.locationFullPath = A.Location;
         }
     }
@@ -68,7 +63,7 @@ namespace JobUse
         static bool bVerbose = false;  // Show extra debugging tracing
 
         // Used in conjunction with Location class for current name of application
-        static string sExeFilename = null;
+        static string? sExeFilename = null;
 
         static int iFilteredJobs = 0;
         static int iAllJobThreads = 0;
@@ -104,9 +99,9 @@ namespace JobUse
             {
                 using (IScheduler scheduler = new Scheduler())
                 {
-                    ISchedulerCollection jobs = null;
-                    IFilterCollection filter = null;
-                    ISortCollection sort = null;
+                    ISchedulerCollection? jobs = null;
+                    IFilterCollection? filter = null;
+                    ISortCollection? sort = null;
 
                     scheduler.Connect(clusterName);
 

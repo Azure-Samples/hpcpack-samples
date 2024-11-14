@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34031.279
+VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicNodeGroups", "DynamicNodeGroups\DynamicNodeGroups.csproj", "{D81F78F7-D5EC-4AAF-87FF-C2A5BCFD4148}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicNodeGroups", "DynamicNodeGroups\DynamicNodeGroups.csproj", "{E35EE4C4-B6A1-444B-B9FA-EDC3C2E53302}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D81F78F7-D5EC-4AAF-87FF-C2A5BCFD4148}.Debug|x64.ActiveCfg = Debug|x64
-		{D81F78F7-D5EC-4AAF-87FF-C2A5BCFD4148}.Debug|x64.Build.0 = Debug|x64
-		{D81F78F7-D5EC-4AAF-87FF-C2A5BCFD4148}.Release|x64.ActiveCfg = Release|x64
-		{D81F78F7-D5EC-4AAF-87FF-C2A5BCFD4148}.Release|x64.Build.0 = Release|x64
+		{E35EE4C4-B6A1-444B-B9FA-EDC3C2E53302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E35EE4C4-B6A1-444B-B9FA-EDC3C2E53302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E35EE4C4-B6A1-444B-B9FA-EDC3C2E53302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E35EE4C4-B6A1-444B-B9FA-EDC3C2E53302}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {54E44C0A-7362-44E6-BF2C-F8D5BE520D50}
+		SolutionGuid = {058073F2-3899-43BB-8F70-9ACF51375A5A}
 	EndGlobalSection
 EndGlobal

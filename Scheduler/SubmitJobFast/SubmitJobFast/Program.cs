@@ -1,6 +1,5 @@
 ﻿using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
-using System;
 
 namespace SubmitJobFast
 {
@@ -10,7 +9,7 @@ namespace SubmitJobFast
 
         static void Main()
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
             using (IScheduler scheduler = new Scheduler())
             {

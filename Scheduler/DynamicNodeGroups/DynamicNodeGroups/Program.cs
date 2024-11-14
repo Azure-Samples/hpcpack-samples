@@ -4,12 +4,9 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.Threading;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace DynamicNodeGroups
 {
@@ -20,12 +17,12 @@ namespace DynamicNodeGroups
         //for best results, run this sample code in queued scheduling mode
         static async Task Main(string[] args)
         {
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
+            string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
             using (IScheduler scheduler = new Scheduler())
             {
                 Console.WriteLine("Connecting to {0}", clusterName);
                 scheduler.Connect(clusterName);
-
+                Console.WriteLine("Connected");
                 //assume you have two nodegroups, NodeGroup1 and NodeGroup2
                 IStringCollection nodeGroup1 = scheduler.GetNodesInNodeGroup("NodeGroup1");
                 IStringCollection nodeGroup2 = scheduler.GetNodesInNodeGroup("NodeGroup2");
@@ -125,7 +122,7 @@ namespace DynamicNodeGroups
             }
         }
 
-        static void Job_OnTaskState(object sender, TaskStateEventArg e)
+        static void Job_OnTaskState(object? sender, TaskStateEventArg e)
         {
             if (e.NewState == TaskState.Running)
             {

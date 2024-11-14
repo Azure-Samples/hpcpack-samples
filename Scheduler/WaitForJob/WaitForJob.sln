@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34202.233
+VisualStudioVersion = 17.10.35004.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaitForJob", "WaitForJob\WaitForJob.csproj", "{802C2052-37BC-4101-ABC9-C1F54D9F275A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaitForJob", "WaitForJob\WaitForJob.csproj", "{5F04A429-B370-4B84-89B6-9AE8C431CFE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{802C2052-37BC-4101-ABC9-C1F54D9F275A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{802C2052-37BC-4101-ABC9-C1F54D9F275A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{802C2052-37BC-4101-ABC9-C1F54D9F275A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{802C2052-37BC-4101-ABC9-C1F54D9F275A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F04A429-B370-4B84-89B6-9AE8C431CFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F04A429-B370-4B84-89B6-9AE8C431CFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F04A429-B370-4B84-89B6-9AE8C431CFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F04A429-B370-4B84-89B6-9AE8C431CFE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F6A1110A-CF01-4B1D-9C54-EA24D8A6D680}
+		SolutionGuid = {6461D41E-3C64-45B7-A805-8B9C6B6498E0}
 	EndGlobalSection
 EndGlobal
