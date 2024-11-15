@@ -1,4 +1,4 @@
-# HPC Pack 2016 SOA Tutorial: Batch Mode
+# HPC Pack 2019 SOA Tutorial: Batch Mode
 
 ## Introduction
 
@@ -9,12 +9,12 @@ This sample builds a batch mode service-oriented architecture (SOA) service (Pri
 Prerequisites:
 
 - Client computer
-  - Windows 8 or later
+  - Windows 10 or later
   - Visual Studio 2017 or later  
 
 - Microsoft HPC cluster 
-  - Head node running Windows Server 2016
-  - [Microsoft HPC Pack 2016 Update 1](https://www.microsoft.com/en-us/download/details.aspx?id=56360) or later
+  - Head node running Windows Server 2016 or later
+  - [Microsoft HPC Pack 2019 Update 1](https://www.microsoft.com/en-us/download/details.aspx?id=56360) or later
 
 ## Steps
 
