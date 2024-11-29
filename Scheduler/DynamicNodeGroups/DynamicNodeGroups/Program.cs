@@ -8,12 +8,6 @@ using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 using System.Diagnostics;
 
-#if NET472
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-#endif
-
 namespace DynamicNodeGroups
 {
     class Program
@@ -23,11 +17,7 @@ namespace DynamicNodeGroups
         //for best results, run this sample code in queued scheduling mode
         static async Task Main(string[] args)
         {
-#if NET472
-            string clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
-#elif NET8_0
             string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
-#endif
             using (IScheduler scheduler = new Scheduler())
             {
                 Console.WriteLine("Connecting to {0}", clusterName);
@@ -119,7 +109,7 @@ namespace DynamicNodeGroups
                     int newAllocationCount = job.AllocatedNodes.Count;
                     Console.WriteLine("newAllocationCount: {0}", newAllocationCount);
                     Console.WriteLine("allocationCount: {0}", allocationCount);
-                    
+
                     if (newAllocationCount > allocationCount)
                     {
                         Console.WriteLine("Job has grown to {0} nodes", newAllocationCount);
@@ -132,11 +122,7 @@ namespace DynamicNodeGroups
             }
         }
 
-#if NET472
-        static void Job_OnTaskState(object sender, TaskStateEventArg e)
-#elif NET8_0
         static void Job_OnTaskState(object? sender, TaskStateEventArg e)
-#endif
         {
             if (e.NewState == TaskState.Running)
             {
