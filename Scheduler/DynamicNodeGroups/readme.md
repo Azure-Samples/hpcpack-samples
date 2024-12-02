@@ -17,17 +17,17 @@ If all the resources are being used up in one Nodegroup while nodes in another N
 The sample begins by submitting a service task (which expands indefinitely) to NodeGroup1 with the intention of taking up all of the group's resources. We can then use the "dynamic node group" feature to help expand the job. Once we see that the job has taken all of the available nodes in the nodegroup, we'll then move an idle node from NodeGroup2 into NodeGroup1 (which can be done via Powershell or through the HPC Cluster Manager). We will then see that the job has grown to the new node without having to modify the job while it is running.
 
 ## How to build
-If you want to build both .Net8 and .Net Framework 4.7.2
+Target on both .Net 8 and .Net Framework 4.7.2
 ```powershell
 dotnet build
 ```
 
-If you want to build .Net8
+Target on .Net 8
 ```powershell
 dotnet build -f net8.0
 ```
 
-If you want to build .Net Framework 4.7.2
+Target on .Net Framework 4.7.2
 ```powershell
 dotnet build -f net472
 ```

@@ -4,7 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
 using Microsoft.Hpc.Scheduler;
 using Microsoft.Hpc.Scheduler.Properties;
 
