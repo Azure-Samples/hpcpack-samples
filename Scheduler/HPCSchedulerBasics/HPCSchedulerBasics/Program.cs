@@ -13,18 +13,18 @@ namespace HPCSchedulerBasics
     {
         static ISchedulerJob? job;
         static ISchedulerTask? task;
-        static ManualResetEvent jobFinishedEvent = new ManualResetEvent(false);
+        private static readonly ManualResetEvent jobFinishedEvent = new(false);
 
         static void ShowHelp()
         {
             string help = @"
                 Usage:
-                {0} [-c <cluster name>] [-u <user name>] [-d]
+                {0} [-u <user name>] [-c <cluster name>] [-d]
 
                 Options:
-                -c Provide a HPC cluster name to connect to. The default value is %CCP_SCHEDULER%.
-                -u Provide a user name to connect as that user.
-                -d Run in debug mode.
+                -u Required. It provides the username to connect to the cluster.
+                -c Optional. It provides the HPC cluster name. If you don't provide it, the default value will be %CCP_SCHEDULER%.
+                -d Optional. Runs in debug mode, and it will print more useful information for debugging.
                 ";
             Console.WriteLine(String.Format(help, System.Diagnostics.Process.GetCurrentProcess().ProcessName));
         }
@@ -143,7 +143,7 @@ namespace HPCSchedulerBasics
         {
             if (e.NewState == JobState.Finished) //the job is finished
             {
-                task.Refresh(); // update the task object with updates from the scheduler
+                task!.Refresh(); // update the task object with updates from the scheduler
 
                 Console.WriteLine("Job completed.");
                 Console.WriteLine("Output: " + task.Output); //print the task's output
