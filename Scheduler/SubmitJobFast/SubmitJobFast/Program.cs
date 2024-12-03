@@ -11,16 +11,14 @@ namespace SubmitJobFast
         {
             string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
-            using (IScheduler scheduler = new Scheduler())
-            {
-                scheduler.Connect(clusterName);
+            using IScheduler scheduler = new Scheduler();
+            scheduler.Connect(clusterName);
 
-                // SubmitJobById / SubmitJob call will return when the job reaches the speficied state
-                TestSubmitJobById(scheduler, JobState.Configuring | JobState.Submitted);
-                TestSubmitJob(scheduler, JobState.Configuring | JobState.Submitted);
+            // SubmitJobById / SubmitJob call will return when the job reaches the speficied state
+            TestSubmitJobById(scheduler, JobState.Configuring | JobState.Submitted);
+            TestSubmitJob(scheduler, JobState.Configuring | JobState.Submitted);
 
-                scheduler.Close();
-            }
+            scheduler.Close();
         }
 
         public static void TestSubmitJobById(IScheduler scheduler, JobState jobState = 0)
