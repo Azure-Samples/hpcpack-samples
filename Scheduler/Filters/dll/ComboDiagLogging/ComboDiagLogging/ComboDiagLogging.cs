@@ -4,7 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System.IO;
 using System.Reflection;
 using System.Diagnostics;
 using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
@@ -25,8 +24,9 @@ namespace CombinedDiagnosticFilterWithEventLogging
 {
     public class ActvSubCombo : ISubmissionFilter, IActivationFilter, IFilterLifespan
     {
-        private EventLog _log = new EventLog();
-        public TextWriter logFile = null;
+        private EventLog _log = new();
+
+        public TextWriter? logFile = null;
 
         private int _onFilterLoadCalls = 0;
         private int _onFilterUnloadCalls = 0;

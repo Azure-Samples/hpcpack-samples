@@ -109,7 +109,7 @@ namespace DynamicNodeGroups
                     int newAllocationCount = job.AllocatedNodes.Count;
                     Console.WriteLine("newAllocationCount: {0}", newAllocationCount);
                     Console.WriteLine("allocationCount: {0}", allocationCount);
-                    
+
                     if (newAllocationCount > allocationCount)
                     {
                         Console.WriteLine("Job has grown to {0} nodes", newAllocationCount);

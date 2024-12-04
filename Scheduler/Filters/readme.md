@@ -1,4 +1,6 @@
-ReadMe for Scheduler Filter Sample Sources:
+## Introduction
+
+Readme for Scheduler Filter Sample Sources:
 
 Samples for each type of HPC Scheduler filter technology are provided:
 - dll
@@ -25,3 +27,19 @@ Samples for each type of HPC Scheduler filter technology are provided:
 
 	- Submission JobSize
 		A sample submission filter that changes the job based on its size.
+
+## How to build
+Target on both .Net 8 and .Net Framework 4.7.2
+```powershell
+dotnet build
+```
+
+Target on .Net 8
+```powershell
+dotnet build -f net8.0
+```
+
+Target on .Net Framework 4.7.2
+```powershell
+dotnet build -f net472
+```

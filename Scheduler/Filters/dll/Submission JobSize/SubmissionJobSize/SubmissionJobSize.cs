@@ -4,9 +4,7 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
 using System.Xml;
-using System.IO;
 using System.Reflection;
 using Microsoft.Hpc.Scheduler.AddInFilter.HpcClient;
 

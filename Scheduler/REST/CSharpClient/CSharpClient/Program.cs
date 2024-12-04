@@ -4,12 +4,13 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using static CSharpClient.Utils;
-using System;
-using System.Collections.Generic;
-using System.Net;
+#if NET472
 using System.Net.Http;
-using System.Threading.Tasks;
+#endif
+
+using static CSharpClient.Utils;
+using System.Net;
+
 /*
  * The following sample sources no longer require the REST Starter Kit.
  *
@@ -26,7 +27,7 @@ namespace CSharpClient
         const string QueryIdQueryParam = "QueryId";
         const string QueryIdHeader = ContinuationHeader + QueryIdQueryParam;
 
-        static string[] ServerNames { get; set; }
+        static string[]? ServerNames { get; set; }
 
         static int ServerConter { get; set; } = 0;
 
@@ -36,7 +37,7 @@ namespace CSharpClient
             {
                 //NOTE: Usually, a load balancer is used to select a backend server. This is a demo
                 //on how to do it on client side when you have no better choice.
-                int index = ServerConter++ % ServerNames.Length;
+                int index = ServerConter++ % ServerNames!.Length;
                 return $"https://{ServerNames[index]}/WindowsHpc";
             }
         }
@@ -58,16 +59,16 @@ Options:
 
         static async Task Main(string[] args)
         {
-            string credUserName = null;
-            string credPassword = null;
-            string serverName = null;
+            string? credUserName = null;
+            string? credPassword = null;
+            string? serverName = null;
 
             bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
 
             // Parse command line
             try
             {
-                ParseCommandLine(args, ref credUserName, ref credPassword, ref serverName, ref credentialsAreCachedOnHN);
+                ParseCommandLine(args, ref credUserName!, ref credPassword!, ref serverName!, ref credentialsAreCachedOnHN);
             }
             catch (Exception ex)
             {
@@ -78,7 +79,7 @@ Options:
 
             if (credUserName == null || credPassword == null || serverName == null)
             {
-                Console.WriteLine("One of credUserName,credPassword, serverName is not provided");
+                Console.WriteLine("One of credUserName, credPassword, serverName is not provided");
                 ShowHelp();
                 return;
             }
@@ -95,23 +96,23 @@ Options:
             httpClient.DefaultRequestHeaders.Add("api-version", "2012-11-01.4.0");
 
             // GET Nodegroup list
-            RestRow[] nodeGroupRows = await GetNodegroupList(httpClient);
+            RestRow[]? nodeGroupRows = await GetNodegroupList(httpClient);
             Console.WriteLine("---Completed GET Nodegroup list---");
 
             // GET single Nodegroup
             // take the 0th nodegroup and fetch list of nodes
-            string nodegroup = nodeGroupRows[0].Props[0].Value;
-            string[] nodesInGroup = await GetSingleNodegroup(httpClient, nodegroup);
+            string nodegroup = nodeGroupRows![0].Props![0].Value;
+            string[]? nodesInGroup = await GetSingleNodegroup(httpClient, nodegroup);
             Console.WriteLine("---Completed GET single Nodegroup---");
 
             // GET single Node
             // take the 0th node and fetch list of properties
-            string node = nodesInGroup[0];
+            string node = nodesInGroup![0];
             await GetSingleNode(httpClient, node);
             Console.WriteLine("---Completed GET single Node---");
 
             // GET the list of Nodes with Continuation Headers
-            RestRow[] nodes = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Nodes", "Properties=Name,Id,MemorySize");
+            RestRow[]? nodes = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Nodes", "Properties=Name,Id,MemorySize");
             Console.WriteLine("---Completed GET the list of Nodes with Continuation Headers---");
 
             // Create and submit job using properties
@@ -122,7 +123,6 @@ Options:
             await CancelJob(httpClient, jobId);
             Console.WriteLine("---Completed Cancel job---");
 
-
             // GET job properties
             await GetJobProperties(httpClient, jobId);
             Console.WriteLine("---Completed GET job properties---");
@@ -132,14 +132,14 @@ Options:
             Console.WriteLine("---Completed Create job using XML---");
             
             // List Jobs and use of Continuation Headers
-            RestRow[] jobs = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Jobs", "Properties=Id,Name,State");
-            DisplayRowset(jobs);
+            RestRow[]? jobs = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Jobs", "Properties=Id,Name,State");
+            DisplayRowset(jobs!);
             Console.WriteLine("---Completed List Jobs and use of Continuation Headers---");
 
             // List Jobs filtered by JobState
             // here we requeset all canceled jobs via $filter= and Render=
             jobs = await ReadCollectionWithContinuationAsync(httpClient, ApiBase + "/Jobs", "Render=RestPropRender&$filter=JobState eq Canceled");
-            DisplayRowset(jobs);
+            DisplayRowset(jobs!);
             Console.WriteLine("---Completed List Jobs filtered by JobState---");
 
             Console.WriteLine("Completed for all samples!");
@@ -170,9 +170,9 @@ Options:
         /// </summary>
         /// <param name="baseURI"></param>
         /// <param name="baseQueryString"></param>
-        public static async Task<RestRow[]> ReadCollectionWithContinuationAsync(HttpClient httpClient, string baseURI, string baseQueryString)
+        public static async Task<RestRow[]?> ReadCollectionWithContinuationAsync(HttpClient httpClient, string baseURI, string baseQueryString)
         {
-            RestRow[] rows = null;
+            RestRow[]? rows = null;
 
             try
             {
@@ -208,8 +208,8 @@ Options:
         /// <returns></returns>
         public static async Task<RestRow[]> ReadCollectionWithContinuationAndRetryAsync(HttpClient httpClient, string baseURI, string baseQueryString)
         {
-            List<RestRow> rows = new List<RestRow>();
-            string queryId = null;
+            List<RestRow> rows = new();
+            string? queryId = null;
             string continuationSeperator;
             string combinedURI;
 
@@ -233,7 +233,7 @@ Options:
 
             while (true)
             {
-                HttpResponseMessage response = null;
+                HttpResponseMessage? response = null;
 
                 try
                 {
@@ -260,13 +260,12 @@ Options:
 
                 if (proceedToNextContinuation)
                 {
-                    RestRow[] restRowset = await GetObjectFromResponseAsync<RestRow[]>(response);
+                    RestRow[] restRowset = await GetObjectFromResponseAsync<RestRow[]>(response!);
                     rows.AddRange(restRowset);
 
                     // the continuation header contains the continuation token.
                     // fetch it here and place on query string of next call
-                    IEnumerable<string> values;
-                    if (response.Headers.TryGetValues(QueryIdHeader, out values))
+                    if (response!.Headers.TryGetValues(QueryIdHeader, out IEnumerable<string>? values))
                     {
                         foreach (var id in values)
                         {
@@ -307,14 +306,14 @@ Options:
                         credentialsAreCachedOnHN = true;
                         break;
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException($"Can't parse commandline, invalid argument {args[i]} in args list");
                 }
             }
         }
 
-        public static async Task<RestRow[]> GetNodegroupList(HttpClient httpClient)
+        public static async Task<RestRow[]?> GetNodegroupList(HttpClient httpClient)
         {
-            RestRow[] nodeGroupRows = null;
+            RestRow[]? nodeGroupRows = null;
             try
             {
                 string url = $"{ApiBase}/Nodegroups";
@@ -327,7 +326,7 @@ Options:
 
                 foreach (RestRow row in nodeGroupRows)
                 {
-                    foreach (RestProp prop in row.Props)
+                    foreach (RestProp prop in row.Props!)
                     {
                         Console.WriteLine(prop.Value);
                     }
@@ -341,9 +340,9 @@ Options:
             return nodeGroupRows;
         }
 
-        public static async Task<string[]> GetSingleNodegroup(HttpClient httpClient, string nodegroup)
+        public static async Task<string[]?> GetSingleNodegroup(HttpClient httpClient, string nodegroup)
         {
-            string[] nodesInGroup = null;
+            string[]? nodesInGroup = null;
             try
             {
                 string url = $"{ApiBase}/Nodegroup/{nodegroup}";
@@ -368,9 +367,9 @@ Options:
             return nodesInGroup;
         }
 
-        public static async Task<RestProp[]> GetSingleNode(HttpClient httpClient, string node)
+        public static async Task<RestProp[]?> GetSingleNode(HttpClient httpClient, string node)
         {
-            RestProp[] nodeProperties = null;
+            RestProp[]? nodeProperties = null;
             try
             {
                 string url = $"{ApiBase}/Node/{node}";
@@ -398,13 +397,15 @@ Options:
         public static async Task<int> CreateJobUsingProperties(HttpClient httpClient, bool credentialsAreCachedOnHN,
             string credUserName, string credPassword)
         {
-            List<RestProp> createJobProps = new List<RestProp>();
-            createJobProps.Add(new RestProp("MinNodes", "1"));
-            createJobProps.Add(new RestProp("MaxNodes", "3"));
-            createJobProps.Add(new RestProp("UnitType", "2")); // JobUnitType.Node
-            createJobProps.Add(new RestProp("AutoCalculateMax", "false"));
-            createJobProps.Add(new RestProp("AutoCalculateMin", "false"));
-            createJobProps.Add(new RestProp("Priority", "0"));   // JobPriority.Lowest
+            List<RestProp> createJobProps = new()
+            {
+                new RestProp("MinNodes", "1"),
+                new RestProp("MaxNodes", "3"),
+                new RestProp("UnitType", "2"), // JobUnitType.Node
+                new RestProp("AutoCalculateMax", "false"),
+                new RestProp("AutoCalculateMin", "false"),
+                new RestProp("Priority", "0")   // JobPriority.Lowest
+            };
 
             int jobId = 0;
             // first we create an empty job
@@ -425,10 +426,13 @@ Options:
 
             // we now have an empty job, now add task
 
-            List<RestProp> taskProps = new List<RestProp>();
-            taskProps.Add(new RestProp("MinNodes", "1"));
-            taskProps.Add(new RestProp("MaxNodes", "3"));
-            taskProps.Add(new RestProp("CommandLine", "hostname"));
+            List<RestProp> restProps = new()
+            {
+                new RestProp("MinNodes", "1"),
+                new RestProp("MaxNodes", "3"),
+                new RestProp("CommandLine", "hostname")
+            };
+            List<RestProp> taskProps = restProps;
 
             try
             {
@@ -443,8 +447,10 @@ Options:
             }
 
             // here we construct any desired submit properties...
-            List<RestProp> submitJobPropList = new List<RestProp>();
-            submitJobPropList.Add(new RestProp("RunUntilCanceled", "true"));  // we will cancel this job below via REST call
+            List<RestProp> submitJobPropList = new()
+            {
+                new RestProp("RunUntilCanceled", "true")  // we will cancel this job below via REST call
+            };
 
             // add any other properties here
             if (!credentialsAreCachedOnHN)
@@ -485,9 +491,9 @@ Options:
             }
         }
 
-        public static async Task<RestProp[]> GetJobProperties(HttpClient httpClient, int jobId)
+        public static async Task<RestProp[]?> GetJobProperties(HttpClient httpClient, int jobId)
         {
-            RestProp[] props = null;
+            RestProp[]? props = null;
             try
             {
                 string url = $"{ApiBase}/Job/{jobId}?Properties=Id,Name,State";
@@ -508,7 +514,7 @@ Options:
 
         public static async Task<int> CreateJobUsingXML(HttpClient httpClient, int jobId)
         {
-            string xml = null;
+            string? xml = null;
 
             try
             {
