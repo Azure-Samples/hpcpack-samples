@@ -1,9 +1,9 @@
 This sample describes the process of dynamically changing node groups, and the result it has on the scheduler.
 
-Requirements: At least 2 nodes, with at least one node in a node group named "NodeGroup1", and at least one node in a Nodegroup named "NodeGroup2".
+Requirements: At least 2 nodes, with at least one node in a Nodegroup named "NodeGroup1", and at least one node in a Nodegroup named "NodeGroup2".
 
 ## How to set up Nodegroup
- - run the "HPC Cluster Manager" as an Administator (You can find this program in Start->All Programs->Microsoft HPC Pack 2016+). 
+ - Run the "HPC Cluster Manager" as an Administator (You can find this program in Start->All Programs->Microsoft HPC Pack 2016+). 
  - Click on the "Node Management" button, then in the list tree, click "By Group". The actions pane  on the righthand side will change (if the actions pane is missing, click on "View", "Actions"). 
  - Click on "Add Group" and give it the name "NodeGroup1". Repeat to add "NodeGroup2". 
  - Now, click on "Online" in the list tree, and you will see a list of your online nodes.
