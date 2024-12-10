@@ -13,3 +13,11 @@ Examples include:
 - Check job properties
 - Create job using XML
 - List jobs and use of Continuation Headers
+
+# Usage
+The username and password should be wrapped with double quotation marks.
+CSharpClient -c &lt;cluster_name&gt; -u "&lt;domain_name&gt;\\&lt;user_name&gt;" -p "&lt;password&gt;"
+
+# Node
+This is the latest version of REST api whose url starts with `hpc`.
+View [CSharpClient](https://github.com/Azure-Samples/hpcpack-samples/tree/master/Scheduler/REST/CSharpClient) for the old version of REST API whose url starts with `WindowsHpc`.

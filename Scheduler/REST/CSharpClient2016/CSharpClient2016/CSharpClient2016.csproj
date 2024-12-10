@@ -13,7 +13,7 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

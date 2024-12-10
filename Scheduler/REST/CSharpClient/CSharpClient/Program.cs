@@ -87,11 +87,12 @@ Options:
             ServerNames = serverName.Split(',');
             ICredentials credsBasic = new NetworkCredential(credUserName, credPassword);
 
+            var handler = new HttpClientHandler() { Credentials = credsBasic };
+
             // This disables enforcement of certificat trust chains which enables the use of self-signed certs.
             // Comment out this line to enforce trusted chains between your REST service and REST clients.
-            ServicePointManager.ServerCertificateValidationCallback = (obj, cert, chain, err) => true;
+            handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
 
-            var handler = new HttpClientHandler() { Credentials = credsBasic };
             var httpClient = new HttpClient(handler);
             httpClient.DefaultRequestHeaders.Add("api-version", "2012-11-01.4.0");
 
