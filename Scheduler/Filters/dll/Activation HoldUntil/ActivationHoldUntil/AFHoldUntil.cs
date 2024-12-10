@@ -98,7 +98,8 @@ namespace ActivationFilterSample
                             DateTime peakEnd = DateTime.Today.AddHours((double)endhours);
 
                             // If the job is not already set to delay until off peak hours, set it
-                            // This property should be null, but could be non-null if some other
+                            // This property should be DateTime.minValue by default,
+                            // but could be some other value if another
                             // thread has set it after scheduling called the activation filter
                             if (job.HoldUntil < peakEnd)
                             {
