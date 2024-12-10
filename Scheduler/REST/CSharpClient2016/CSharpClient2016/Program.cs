@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Collections.Generic;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using static CSharpClient2016.Utils;
 
@@ -23,15 +20,17 @@ namespace CSharpClient2016
 {
     public class Program
     {
-        static async Task<int> CreateJob(HttpClient httpClient, NetworkCredential cred)
+        static async Task<int> CreateJob(HttpClient httpClient, NetworkCredential? cred)
         {
-            List<RestProp> createJobProps = new List<RestProp>();
-            createJobProps.Add(new RestProp("MinNodes", "1"));
-            createJobProps.Add(new RestProp("MaxNodes", "3"));
-            createJobProps.Add(new RestProp("UnitType", "2")); // JobUnitType.Node
-            createJobProps.Add(new RestProp("AutoCalculateMax", "false"));
-            createJobProps.Add(new RestProp("AutoCalculateMin", "false"));
-            createJobProps.Add(new RestProp("Priority", "0"));   // JobPriority.Lowest
+            List<RestProp> createJobProps = new()
+            {
+                new RestProp("MinNodes", "1"),
+                new RestProp("MaxNodes", "3"),
+                new RestProp("UnitType", "2"), // JobUnitType.Node
+                new RestProp("AutoCalculateMax", "false"),
+                new RestProp("AutoCalculateMin", "false"),
+                new RestProp("Priority", "0") // JobPriority.Lowest
+            };
 
             // First we create an empty job
             string url = "/hpc/jobs";
@@ -43,10 +42,12 @@ namespace CSharpClient2016
             Console.WriteLine($"The created job id is {jobId}.");
 
             // Then add task
-            List<RestProp> taskProps = new List<RestProp>();
-            taskProps.Add(new RestProp("MinNodes", "1"));
-            taskProps.Add(new RestProp("MaxNodes", "3"));
-            taskProps.Add(new RestProp("CommandLine", "hostname"));
+            List<RestProp> taskProps = new()
+            {
+                new RestProp("MinNodes", "1"),
+                new RestProp("MaxNodes", "3"),
+                new RestProp("CommandLine", "hostname")
+            };
 
             url = $"/hpc/jobs/{jobId}/Tasks";
             Console.WriteLine($"POST {url}");
@@ -54,10 +55,10 @@ namespace CSharpClient2016
             await CheckHttpErrorAsync(response);
 
             // Finally add any desired submit properties and submit
-            List<RestProp> submitJobPropList = new List<RestProp>();
+            List<RestProp> submitJobPropList = new();
             if (cred != null)
             {
-                //  Supply these properties if your credentials are not cached on the head node
+                // Supply these properties if your credentials are not cached on the head node
                 submitJobPropList.Add(new RestProp("UserName", cred.UserName));
                 submitJobPropList.Add(new RestProp("Password", cred.Password));
             }
@@ -83,9 +84,9 @@ namespace CSharpClient2016
             }
         }
 
-        static void ParseCommandLine(string[] args, ref string username, ref string password, ref string tenentid, 
-            ref string clientid, ref string resourceid, ref string redirectUri, ref bool credentialsAreCachedOnHN,
-            ref string serverName, ref bool debug)
+        static void ParseCommandLine(string[] args, ref string? username, ref string? password, ref string? tenentid, 
+            ref string? clientid, ref string? resourceid, ref string? redirectUri, ref bool credentialsAreCachedOnHN,
+            ref string? serverName, ref bool debug)
         {
             for (int i = 0; i < args.Length; i++)
             {
@@ -127,14 +128,14 @@ namespace CSharpClient2016
         public static async Task Main(string[] args)
         {
             // It's enough to provide username, password, serverName.
-            string username = null;
-            string password = null;
-            string tenentid = null;
-            string clientid = null;
-            string resourceid = null;
-            string redirectUri = "http://hpcclient";
-            bool credentialsAreCachedOnHN = false;  // set to true if your creds were cached in the HN by ClusterManager, etc.
-            string serverName = null;
+            string? username = null;
+            string? password = null;
+            string? tenentid = null;
+            string? clientid = null;
+            string? resourceid = null;
+            string? redirectUri = "http://hpcclient";
+            bool credentialsAreCachedOnHN = false; // set to true if your creds were cached in the HN by ClusterManager, etc.
+            string? serverName = null;
             bool debug = false;
 
             try
@@ -151,7 +152,7 @@ namespace CSharpClient2016
 
             if (serverName == null ||
                 (!credentialsAreCachedOnHN && (username == null || password == null)) ||
-                //When any option of AAD is null, then NTML is used and thus username and password must be present
+                // When any option of AAD is null, then NTML is used and thus username and password must be present
                 ((tenentid == null || clientid == null || resourceid == null) && (username == null || password == null)))
             {
                 ShowHelp();
@@ -168,25 +169,36 @@ namespace CSharpClient2016
             // Comment out this line to enforce trusted chains between your REST service and REST clients.
             ServicePointManager.ServerCertificateValidationCallback = (obj, cert, chain, err) => true;
 
-            string token = null;
+            string? token = null;
             if (tenentid != null && clientid != null && resourceid != null)
             {
                 var ac = new AuthenticationContext($"https://login.microsoftonline.com/{tenentid}");
-                var result = await ac.AcquireTokenAsync(resourceid, clientid, new Uri(redirectUri), new PlatformParameters(PromptBehavior.Auto));
+#if NET472
+                var result = await ac.AcquireTokenAsync(resourceid, clientid, new Uri(redirectUri!), new PlatformParameters(PromptBehavior.Auto));
+#else
+                var result = await ac.AcquireTokenAsync(resourceid, clientid, new Uri(redirectUri!), new PlatformParameters());
+#endif
                 token = result.AccessToken;
             }
 
-            NetworkCredential cred = (username != null && password != null) ? new NetworkCredential(username, password) : null;
-            string apiBase = $"https://{serverName}";
-            var handler = new HttpClientHandler();
+            NetworkCredential? cred = (username != null && password != null) ? new NetworkCredential(username, password) : null;
+            
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
+            };
+
             if (token == null)
             {
                 //Auth by NTLM
                 handler.Credentials = cred;
             }
+
+            string apiBase = $"https://{serverName}";
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri(apiBase) };
             httpClient.DefaultRequestHeaders.Add("api-version", "2016-11-01.5.0");
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml"));
+
             if (token != null)
             {
                 //Auth by AAD

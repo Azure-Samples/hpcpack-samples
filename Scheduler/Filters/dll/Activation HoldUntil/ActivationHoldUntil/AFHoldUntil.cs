@@ -4,8 +4,6 @@
 //
 //Copyright (C) Microsoft Corporation.  All rights reserved.
 
-using System;
-using System.IO;
 using System.Xml;
 using System.Reflection;
 using Microsoft.Hpc.Scheduler;
@@ -81,14 +79,14 @@ namespace ActivationFilterSample
                 XmlNode jobXML = doc.SelectSingleNode("/hpc:Job", nsMgr) ?? throw new Exception("No job in the xml file");
 
                 // Find the User attribute for the job.
-                XmlAttributeCollection attrCol = jobXML.Attributes;
-                XmlAttribute userAttr = attrCol["User"];
+                XmlAttributeCollection? attrCol = jobXML.Attributes ?? throw new InvalidOperationException("Attributes collection is null.");
+                XmlAttribute userAttr = attrCol["User"]!;
                 string user = userAttr.Value;
 
                 // If user does not have permission to run jobs during peak hours, adjust HoldUntil if needed
                 if (!PeakHoursUser(user))
                 {
-                    string jobIdString = attrCol["Id"].Value;
+                    string jobIdString = attrCol["Id"]!.Value;
                     int.TryParse(jobIdString, out int jobId);
                     if (jobId != 0)
                     {
@@ -100,9 +98,10 @@ namespace ActivationFilterSample
                             DateTime peakEnd = DateTime.Today.AddHours((double)endhours);
 
                             // If the job is not already set to delay until off peak hours, set it
-                            // This property should be null, but could be non-null if some other
+                            // This property should be DateTime.minValue by default,
+                            // but could be some other value if another
                             // thread has set it after scheduling called the activation filter
-                            if ((job.HoldUntil == null) || (job.HoldUntil < peakEnd))
+                            if (job.HoldUntil < peakEnd)
                             {
                                 job.SetHoldUntil(peakEnd);
                                 job.Commit();
@@ -155,7 +154,7 @@ namespace ActivationFilterSample
             try
             {
                 string assemblyPathInclusive = Assembly.GetExecutingAssembly().Location;
-                string assemblyPath = Path.GetDirectoryName(assemblyPathInclusive);
+                string assemblyPath = Path.GetDirectoryName(assemblyPathInclusive)!;
                 string logFileName = Path.Combine(assemblyPath, "ActivationFilter.log");
                 logFile = new StreamWriter(logFileName, true);
             }

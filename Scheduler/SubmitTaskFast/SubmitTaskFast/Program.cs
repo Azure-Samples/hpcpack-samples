@@ -11,35 +11,33 @@ namespace SubmitTaskFast
         {
             string? clusterName = Environment.GetEnvironmentVariable("CCP_SCHEDULER");
 
-            using (IScheduler scheduler = new Scheduler())
-            {
-                scheduler.Connect(clusterName);
+            using IScheduler scheduler = new Scheduler();
+            scheduler.Connect(clusterName);
 
-                ISchedulerJob job = scheduler.CreateJob();
-                job.Name = "TestSubmitTask";
-                ISchedulerTask task = job.CreateTask();
-                task.Name = "StartTask";
-                task.CommandLine = "ping localhost -n 10";
-                job.AddTask(task);
-                scheduler.SubmitJob(job, null, null);
+            ISchedulerJob job = scheduler.CreateJob();
+            job.Name = "TestSubmitTask";
+            ISchedulerTask task = job.CreateTask();
+            task.Name = "StartTask";
+            task.CommandLine = "ping localhost -n 10";
+            job.AddTask(task);
+            scheduler.SubmitJob(job, null, null);
 
-                // SubmitTask / SubmitTaskById must be called after a job is submitted
-                // SubmitTask / SubmitTaskById call will return when the task reaches the speficied state
-                // There could be chances that the task will skip Configuring or Submitted state and directly go to Queued state
-                TestSubmitTask(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
+            // SubmitTask / SubmitTaskById must be called after a job is submitted
+            // SubmitTask / SubmitTaskById call will return when the task reaches the speficied state
+            // There could be chances that the task will skip Configuring or Submitted state and directly go to Queued state
+            TestSubmitTask(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
 
-                job = scheduler.CreateJob();
-                job.Name = "TestSubmitTaskById";
-                task = job.CreateTask();
-                task.Name = "StartTask";
-                task.CommandLine = "ping localhost -n 10";
-                job.AddTask(task);
-                scheduler.SubmitJob(job, null, null);
+            job = scheduler.CreateJob();
+            job.Name = "TestSubmitTaskById";
+            task = job.CreateTask();
+            task.Name = "StartTask";
+            task.CommandLine = "ping localhost -n 10";
+            job.AddTask(task);
+            scheduler.SubmitJob(job, null, null);
 
-                TestSubmitTaskById(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
+            TestSubmitTaskById(job, TaskState.Configuring | TaskState.Submitted | TaskState.Queued);
 
-                scheduler.Close();
-            }
+            scheduler.Close();
         }
 
         public static void TestSubmitTask(ISchedulerJob job, TaskState taskState = 0)

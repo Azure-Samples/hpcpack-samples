@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Net.Http.Headers;
+﻿#if NET472
 using System.Net.Http;
+#endif
+
+using System.Net.Http.Headers;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace CSharpClient
 {
@@ -14,7 +13,7 @@ namespace CSharpClient
         public static T StreamToObject<T>(Stream stream)
         {
             var dcs = new DataContractSerializer(typeof(T));
-            return (T)dcs.ReadObject(stream);
+            return (T)dcs.ReadObject(stream)!;
         }
 
         public static Stream ObjectToStream<T>(T obj)
@@ -46,15 +45,15 @@ namespace CSharpClient
             // first we try to parse out any V3SP2 style error (string)
             if (ex is WebException)
             {
-                WebException wex = ex as WebException;
+                WebException? wex = ex as WebException;
 
                 using (Stream responseStream = new MemoryStream())
                 {
                     try
                     {
-                        DataContractSerializer dcsString = new DataContractSerializer(typeof(string));
+                        DataContractSerializer dcsString = new(typeof(string));
 
-                        string callChain = wex.Response.Headers["x-ms-hpc-authoritychain"];
+                        string callChain = wex!.Response!.Headers["x-ms-hpc-authoritychain"]!;
 
                         Console.WriteLine("Call Chain: " + callChain);
 
@@ -62,7 +61,7 @@ namespace CSharpClient
 
                         responseStream.Position = 0;
 
-                        string errorBody = dcsString.ReadObject(responseStream) as string;
+                        string? errorBody = dcsString.ReadObject(responseStream) as string;
 
                         message = "V3SP2 Error body was <string>: " + errorBody;
                     }
@@ -76,10 +75,10 @@ namespace CSharpClient
 
                                 responseStream.Position = 0;
 
-                                object sp3ErrorBodyObj = dcsv3SP3.ReadObject(responseStream);
-                                HpcWebServiceFault fault = sp3ErrorBodyObj as HpcWebServiceFault;
+                                object sp3ErrorBodyObj = dcsv3SP3.ReadObject(responseStream)!;
+                                HpcWebServiceFault? fault = sp3ErrorBodyObj as HpcWebServiceFault;
 
-                                message = "V3SP3 Error body was: Code = " + fault.Code + ", Message = " + fault.Message;
+                                message = "V3SP3 Error body was: Code = " + fault!.Code + ", Message = " + fault.Message;
                             }
                             catch (Exception)
                             {
@@ -141,7 +140,7 @@ namespace CSharpClient
                     first = false;
                 }
 
-                foreach (RestProp prop in row.Props)
+                foreach (RestProp prop in row.Props!)
                 {
                     Console.Write(prop.Value + "\t");
                 }
@@ -153,7 +152,7 @@ namespace CSharpClient
 
     public class ServerFriendlyRetryBackoff
     {
-        private static Random _rand = new Random();
+        private static readonly Random _rand = new();
 
         /// <summary>
         /// Opinions vary widely on this topic.  In general it is polite to avoid
@@ -193,7 +192,7 @@ namespace CSharpClient
     public class RestRow
     {
         [DataMember(Name = "Properties")]
-        public RestProp[] Props;
+        public RestProp[]? Props;
     }
 
     [DataContract(Name = "HpcWebServiceFault", Namespace = "http://schemas.microsoft.com/HPCS2008R2/common")]
@@ -222,12 +221,12 @@ namespace CSharpClient
         /// Gets the fault reason.
         /// </summary>
         [DataMember]
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         /// <summary>
         /// Gets the fault context.
         /// </summary>
         [DataMember]
-        public KeyValuePair<string, string>[] Values { get; set; }
+        public KeyValuePair<string, string>[]? Values { get; set; }
     }
 }

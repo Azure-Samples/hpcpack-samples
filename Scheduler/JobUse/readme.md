@@ -29,3 +29,19 @@ JobUse /id:10-20 /project:G    Core usage summary of each G project job, 10-20
 JobUse /id:10-20 /projectb:Red Core usage summary of jobs that begin with Red project within 10-20
 JobUse /user:John              Core usage summary of each job John owns
 JobUse /id:10-20 /user:John    Core usage summary of each job John owns, 10-20
+
+## How to build
+Target on both .Net 8 and .Net Framework 4.7.2
+```powershell
+dotnet build
+```
+
+Target on .Net 8
+```powershell
+dotnet build -f net8.0
+```
+
+Target on .Net Framework 4.7.2
+```powershell
+dotnet build -f net472
+```
